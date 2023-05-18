@@ -1061,4 +1061,4 @@ Comme déjà mentionné, les pipelines peuvent être écrits de manière **décl
 
 Les pipelines Jenkins sont largement utilisés dans les **environnements CI/CD**. L'utilisation de pipelines déclaratifs ou scriptés présente plusieurs avantages. la méthode déclarative offre une syntaxe beaucoup plus conviviale sans aucune connaissance Groovy requise.
 
-
+#%%
