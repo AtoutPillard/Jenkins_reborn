@@ -229,7 +229,7 @@ docker network create jenkins
 ```
 
 Puis lançons le premier conteneur Docker avec la commande :
-> Cela va permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va permettre en autre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.
+> Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.
 
 ```shell
 docker run \
