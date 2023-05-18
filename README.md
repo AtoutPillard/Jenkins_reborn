@@ -218,7 +218,7 @@ Comme nous le savons, Jenkins est développé à l'aide de Java et est indépend
 # II - Installation et configuration de Jenkins
 
 Nous allons installer Jenkins via Docker avec l'image officielle.
-Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil:
+Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
 
 ```shell
 docker pull jenkins/jenkins
@@ -226,7 +226,7 @@ docker pull docker:dind
 docker network create jenkins
 ```
 
-Puis lançons le premier conteneur Docker avec la commande:
+Puis lançons le premier conteneur Docker avec la commande :
 > Cela va permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Très pratique pour exécuter des constructions et des déploiements Docker à partir de Jenkins.
 
 ```shell
@@ -245,7 +245,7 @@ docker run \
   --storage-driver overlay2
 ```
 
-Dans un fichier que nous nommerons `Dockerfile`, nous allons recopier les lignes suivantes:
+Dans un fichier que nous nommerons `Dockerfile`, nous allons recopier les lignes suivantes :
 > Ce script va permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés.
 
 ```dockerfile
@@ -263,7 +263,7 @@ USER jenkins
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.6 docker-workflow:1.29"
 ```
 
-Lançons la commande suivante pour construire notre image Docker:
+Lançons la commande suivante pour construire notre image Docker :
 
 ```shell
 docker build -t myjenkins-blueocean:2.346.3-1 .
