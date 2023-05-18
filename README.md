@@ -519,13 +519,12 @@ Le sous-système **déclaratif** de Pipeline dans Jenkins Pipeline est relativem
 
 ```shell
 pipeline {
-     stages {
-     	stage('Greeting')
-     		{
-     		echo 'hello Datascientest'
-         	}
-         	}
-       }
+    stages {
+     	stage('Greeting'){
+     	    echo 'hello Datascientest'
+ 	}
+    }
+}
 ```
 
 Le pipeline déclaratif Jenkins devrait être le moyen préféré de créer un Job Jenkins car il offre un riche ensemble de fonctionnalités, une courbe d'apprentissage réduite et aucun prérequis pour apprendre un langage de programmation comme Groovy juste pour écrire du code de pipeline.
