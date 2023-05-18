@@ -217,7 +217,7 @@ Comme nous le savons, Jenkins est développé à l'aide de Java et est indépend
 
 # II - Mise en place Jenkins
 
-## A - Installation de Jenkins
+## A - Installation
 
 Nous allons installer Jenkins via Docker avec l'image officielle.
 Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
