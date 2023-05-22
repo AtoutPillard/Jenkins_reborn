@@ -338,6 +338,166 @@ Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le me
 
 #%%
 
+# III - Configuration de GitHub pour Jenkins
+
+<br>
+
+## **A - Installation du plugin Github Integration**
+
+Jenkins est un serveur CI (intégration continue), ce qui signifie qu'il doit **extraire** le code source d'un référentiel de code source pour créer un projet. Jenkins offre un excellent support pour divers systèmes de gestion de code source tels que Subversion, CVS, etc.
+
+Github est un référentiel de code basé sur le Web qui joue un rôle majeur dans le DevOps. GitHub fournit une plate-forme commune à de nombreux développeurs travaillant sur le **même code** ou projet pour télécharger et récupérer le code mis à jour, facilitant ainsi l'**intégration continue**. Jenkins travaille avec Git via le **plugin Git**.
+
+Cependant, connecter un référentiel privé GitHub à une instance privée de Jenkins peut s'avérer délicat.
+
+Pour effectuer la configuration de GitHub, assurons-nous que la connectivité Internet est présente sur la machine sur laquelle Jenkins est installé.
+
+- Dans l'écran d'accueil de Jenkins (tableau de bord Jenkins), cliquons sur l'option **Manage Jenkins** sur le côté gauche de l'écran.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_jenkins.png" style="width:60%">
+</p>
+
+- À présent, cliquons sur **Manage plugins**. Nous remarquons plusieurs onglets, mais nous allons nous intéresser à l'onglet **Manage Plugin**. Il s'agit d'une fonctionnalité de Jenkins qui permet d'améliorer son usage.
+
+Il y a plus de 1800 plugins pour Jenkins, parmi ceux-ci, on peut notamment citer les intégrations avec les différents **systèmes de contrôle de version** (Git, Mercurial, SVN), Kubernetes, Docker et même des services de **Cloud Computing** (AWS, Azure, GCP).
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_plugins.png" style="width:60%">
+</p>
+
+- Dans la page suivante, cliquons sur l'onglet **Available**. Les plugins sont regroupés dans 4 onglets :
+
+  - `Mises à jour/Updated ` qui liste les plugins installés pour lesquels des mises à jour sont disponibles.
+
+  - `Disponibles/Available` qui permet de chercher et d'installer les plugins dont nous avons besoin.
+
+  - `Installés/Installed` qui liste l'ensemble des plugins que nous avons installés.
+
+  - `Avancé/Advanced` qui est une interface plus complexe pour installer des plugin manuellement.
+
+  <div class="alert alert-info"><i class="icon circle info"></i>
+  Jenkins fourni également un <a href="https://plugins.Jenkins.io/" target="_blank">site</a> qui liste les différents plugins existants, sur lequel nous pourrons trouver une documentation plus détaillée.
+  </div>
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/available_plugins.png" style="width:60%">
+</p>
+
+- L'onglet **Available** nous donne une liste des plugins disponibles au téléchargement. Dans le champ de recherche, entrons `github integration` et cochons sur la checkbox afin de sélectionner le plugin `github integration`:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/install_github_integration.png" style="width:60%">
+</p>
+
+- Cliquons sur "**install without restart**". Le téléchargement du plug-in prendra un certain temps en fonction de notre connexion Internet et sera installé automatiquement.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/download_githubintegration_done.png" style="width:60%">
+</p>
+
+Une fois terminé, le plugin sera disponible en option lors de la configuration des jobs.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github-logo.webp" style="width:30%">
+</p>
+
+## **B - Intégration de Jenkins avec GitHub**
+
+### b.1 - Création du dépôt Github
+
+Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Nous commencerons par créer un nouveau dépôt sur notre compte Github, si vous n'en avez pas, vous pouvez en créer un à l'adresse de [GitHub](https://github.com/signup).
+
+Nous allons donc créer un dépôt afin de pouvoir versionner notre code source et le connecter à Jenkins. Allons sur Github créer un nouveau dépôt appelé `Jenkins-datascientest`, avec une visibilité `public`:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/repo_github.png" style="width:60%">
+</p>
+
+Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`. Une fois sur l'interface de dépôt, nous pouvons aller sur les réglages du dépôt en cliquant sur `settings`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/setting_github.png" style="width:100%">
+</p>
+
+### b.2 - Qu'est-ce qu'un webhook ?
+
+**Les Webhooks sont des notifications déclenchées par des événements**. Dans la plupart des cas, ils sont utilisés pour la communication entre les systèmes. C'est le moyen le plus simple de recevoir une alerte lorsque un évènement (tentative de connexion, mise à jour...) se passe dans un autre système.
+
+**Comment fonctionnent les Webhooks ?**
+
+Lorsque nous effectuons un retrait à l'aide d'un guichet automatique, la machine vérifie notre solde et nous donne le montant que nous avons demandé. Une fois cette opération effectuée, notre solde est mis à jour et ce changement déclenche une **action**. Ensuite, un SMS est envoyé avec les détails du retrait.
+
+C'est ainsi que fonctionnent les **Webhooks**. Une action sert de **déclencheur** à une autre action. Le reste est une architecture populaire utilisée pour communiquer entre les systèmes. Un cas d'utilisation populaire consiste à connecter des services Web tels que GitHub et Slack.
+
+Un Webhook est une **requête HTTP** qui transfère des données lorsqu'elle est déclenchée par un **événement** et transporte un **message** vers une destination telle qu'un SMS ou une alerte d'appel téléphonique.
+
+Les Webhooks sont utilisés pour les notifications en **temps réel**, afin que votre système puisse être mis à jour dès que l'événement a lieu. Ce système est très utilisé dans le **DevOps** afin d'avoir un suivi granulaire de nos systèmes.
+
+En termes plus techniques, la plupart des Webhooks sont configurés en tant que points de **rappel HTTP** définis par l'utilisateur. Ils nous permettent d'enregistrer une URL `http://` ou `https://` où les données d'événements peuvent être stockées aux formats [JSON](https://en.wikipedia.org/wiki/JSON) ou [XML](https://en.wikipedia.org/wiki/XML).
+
+Nous pourrons faire ce que nous voulons avec les données que nous récupérons et stockons à partir d'un certain événement.
+
+La mécanique de base des Webhooks consiste à envoyer une requête **HTTP** à l'URL spécifiée par l'utilisateur, ensuite, un webhook effectue un **callback HTTP** vers une URL qui doit être configurée par le système qui **reçoit** les données.
+
+Cette URL de webhook est appelée **point de terminaison** de webhook. Les points de terminaison Webhook doivent être publics pour être accessibles, et il est important que cette URL appartienne au système **récepteur**. Le rappel est déclenché chaque fois qu'il y a un événement dont vous souhaitez informer un autre système.
+
+Nous allons donc le mettre en place sur Github afin d'alerter notre instance de Jenkins.
+
+Nous pouvons à présent cliquer sur `webhooks`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_webhook.png" style="width:100%">
+</p>
+
+Nous pouvons cliquer sur `Add Webhook`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/add_webhook.png" style="width:100%">
+</p>
+
+Dans le formulaire, nous devons remplir le champ `Payload URL`. Nous allons donc remplir ce champ avec la combinaison suivante :
+
+- Votre url jenkins : `http://votreadesseip:8080/`
+- L'endpoint `github-webhook`
+
+Le contenu complet sera donc `http://votreadesseip:8080/github-webhook/`. Vous devrez remplacer `votreadresseip` par l'adresse IP de votre serveur.
+
+Pour le champ `Content type`, nous choisirons `application/json`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/payload_url.png" style="width:100%">
+</p>
+A présent nous devons configurer les évènements qui alerterons Jenkins et déclencherons nos jobs de constructions.
+
+Sur la partie `Which events would you like to trigger this webhook?`, nous choisirons `Let me select individual events` afin de choisir nous même les évènement déclencheurs.
+
+Nous cocherons les cases suivantes :
+
+- `Branch or tag creation`
+
+- `Branch or tag deletion`
+
+- `Packages`
+
+- `Pull request review comments`
+
+- `Pull requests`
+
+- `Pull request reviews`
+
+- `Pushes`
+
+- `Registry packages`
+
+Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cliquant sur le bouton `Add Webhook`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/kubernetes.png" style="width:60%">
+</p>
+
+<br>
+
 ## B - Premier pas sur Jenkins
 
 ### Plugins Jenkins
