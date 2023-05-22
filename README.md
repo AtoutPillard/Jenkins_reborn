@@ -218,9 +218,7 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 
 #%%
 
-# II - Mise en place de Jenkins
-
-## A - Installation
+# II - Installation de Jenkins
 
 Nous allons installer Jenkins via Docker avec l'image officielle.
 Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
@@ -499,27 +497,6 @@ Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cl
 <br>
 
 ## B - Premier pas sur Jenkins
-
-### Plugins Jenkins
-
-Nous allons tout d'abord nous concentrer sur la paramétrisation de Jenkins. Pour cela, cliquez sur "Administrer Jenkins" (_Manage Jenkins_) depuis le dashboard.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/plugin.png" style="width:75%">
-</p>
-
-Nous remarquons plusieurs onglets, mais nous allons nous intéresser à l'onglet _Manage Plugin_. Il s'agit d'une fonctionnalité de Jenkins qui permet d'améliorer l'usage de Jenkins. À l'instar des extensions pour un navigateur web, vous en avez de toutes sortes. Il y a plus de 1800 plugins pour Jenkins. Parmi ceux-ci, on peut notamment citer les intégrations avec les différents systèmes de contrôle de version (Git, Mercurial, SVN), Kubernetes, Docker et même des services de Cloud Computing (AWS, Azure).
-
-Les plugins sont regroupés dans 4 onglets :
-
-- Mises à jour / _Updated_ qui liste les plugins installés pour lesquels des mises à jour sont disponibles.
-- Disponibles / _Available_ qui permet de chercher et d'installer les plugins dont vous avez besoin.
-- Installés / _Installed_ qui liste l'ensemble des plugins que vous avez installés.
-- Avancé / _Advanced_ qui est une interface plus complexe pour installer des plugin manuellement.
-
-<div class="alert alert-info"><i class="icon circle info"></i>
-Jenkins fourni également un <a href="https://plugins.jenkins.io/" target="_blank">site</a> qui liste les différents plugins existants, sur lequel vous pourrez trouver une documentation plus détaillée.
-</div>
 
 ### Création et utilisation d'un Projet
 
