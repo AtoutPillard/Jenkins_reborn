@@ -153,6 +153,8 @@ Jenkins se démocratise de plus en plus, d'une part grâce à son installation q
 
 Enfin, puisqu'il s'agit d'un outil **open-source**, il est régulièrement mis à jour, comme vous pourrez le constater en allant sur leur [GitHub](https://github.com/Jenkinsci/Jenkins) ou leur [Docker Hub](https://hub.docker.com/r/Jenkins/Jenkins).
 
+De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réservé aux Data Engineer, à l'instar d'un système de versioning, il s'agit d'un outil phare pour tout développeur.
+
 ## **E - Avantages et inconvénients de l'utilisation de Jenkins**
 
 ### e.1 - Avantages de Jenkins
