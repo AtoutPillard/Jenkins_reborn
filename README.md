@@ -17,11 +17,9 @@ Jenkins construit et teste nos projets logiciels, ce qui facilite en permanence 
 
 Cela nous permet également de fournir en **continu** notre logiciel en s'intégrant à un grand nombre de technologies de test et de **déploiement**.
 
-Jenkins offre un moyen simple de configurer un environnement d'intégration continue ou de **livraison continue** pour presque tous les langages et les référentiels de code source (comme GitHub, GitLab...) à l'aide de **pipelines**, ainsi que d'automatiser la plupart des tâches de développement.
+Il offre un moyen simple de configurer un environnement d'intégration continue ou de **livraison continue** pour presque tous les langages et les référentiels de code source (comme GitHub, GitLab...) à l'aide de **pipelines**, ainsi que d'automatiser la plupart des tâches de développement.
 
-Avec l'aide de Jenkins, les organisations peuvent accélérer le processus de développement logiciel grâce à l'automatisation. Jenkins ajoute des **processus** de cycle de vie de développement de toutes sortes, y compris la construction, la documentation, le test, le package, la mise en scène, le déploiement d'analyses statiques et bien plus encore.
-
-Jenkins réalise la phase d'intégration continue (**CI**) à l'aide de plugins. Les plugins sont utilisés pour permettre l'intégration de différentes étapes DevOps. Si nous souhaitons intégrer un outil particulier, nous devons installer les plugins dédiés pour cet outil. Par exemple : `Maven 2 Project`, `Git`, `HTML Publisher`, `Amazon EC2`, etc.
+Grâce à cet outil, les organisations peuvent accélérer le processus de développement logiciel grâce à l'automatisation. Jenkins ajoute des **processus** de cycle de vie de développement de toutes sortes, y compris la construction, la documentation, le test, le package, la mise en scène, le déploiement d'analyses statiques et bien plus encore.
 
 Si une organisation développe un projet, **Jenkins** testera en permanence les **versions** de notre projet et mettra en lumière les erreurs dans les premières étapes de notre développement.
 
@@ -47,7 +45,7 @@ Hudson et Jenkins ont continué à fonctionner de manière indépendante. Mais e
 
 Le **CI/CD** (intégration continue/livraison continue) est un processus DevOps holistique (qui s'intéresse à son objet dans sa globalité) et se concentre sur la création d'un mélange compatible entre le **cycle de développement** et le **processus d'exploitation**.
 
-Cela se fait en automatisant les **flux de travail** et en déployant des mises à jour **automatiques** pour améliorer le retour sur investissement. La mise en œuvre du pipeline CI/CD est l'épine dorsale de l'ensemble des principes DevOps et facilite le processus d'introduction du produit sur le marché plus rapidement que jamais.
+Cela se fait en automatisant les **flux de travail** et en déployant des mises à jour **automatiques** pour améliorer le retour sur investissement. La mise en œuvre du pipeline CI/CD facilite le processus d'introduction du produit sur le marché plus rapidement que jamais.
 
 ### c.1 - Qu'est-ce que l'intégration continue ?
 
@@ -294,7 +292,7 @@ docker run \
 Pour ne pas recopier ces longues commandes Docker, vous pouvez passer par des <code>alias</code>, pour les rendre permanent, vous pouvez apprendre en faire depuis ce <a href="https://www.linuxtricks.fr/wiki/personnaliser-son-shell-alias-couleurs-bashrc-cshrc">lien</a>.
 </div>
 
-Après avoir lancer les conteneurs Docker, nous pouvons accéder à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet.
+Après avoir lancer les conteneurs Docker, nous pouvons accéder à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. Nous arrivons alors sur la page ci-dessous:
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/unlock.png" style="width:65%">
@@ -320,7 +318,11 @@ Une fois le mot de passe , nous arriverons sur la page suivante :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/custo.png" style="width:65%">
 </p>
 
-Sélectionnez le bouton _Install suggested plugin_, puis remplissez le formulaire avec les informations requises.
+Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez le formulaire avec les informations requises.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-admin-user.png" style="width:65%">
+</p>
 
 <div class="alert alert-warning">
 Attention à bien noter vos identifiants de connexion.
@@ -332,7 +334,7 @@ Nous devrions arriver sur le dashboard Jenkins :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/welcome.png" style="width:75%">
 </p>
 
-Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le menu principal permettant d'accéder aux différentes fonctionnalités de Jenkins comme la création de projets, la consultation de l'historique, ou encore la configuration de Jenkins.
+Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le **menu principal** permettant d'accéder aux différentes fonctionnalités de Jenkins comme la création de projets, la consultation de l'historique, ou encore la configuration de Jenkins.
 
 #%%
 
@@ -344,7 +346,7 @@ Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le me
 
 Jenkins est un serveur CI (intégration continue), ce qui signifie qu'il doit **extraire** le code source d'un référentiel de code source pour créer un projet. Jenkins offre un excellent support pour divers systèmes de gestion de code source tels que Subversion, CVS, etc.
 
-Github est un référentiel de code basé sur le Web qui joue un rôle majeur dans le DevOps. GitHub fournit une plate-forme commune à de nombreux développeurs travaillant sur le **même code** ou projet pour télécharger et récupérer le code mis à jour, facilitant ainsi l'**intégration continue**. Jenkins travaille avec Git via le **plugin Git**.
+Github est un référentiel de code basé sur le Web qui fournit une plate-forme commune à de nombreux développeurs travaillant sur le **même code** ou projet pour télécharger et récupérer le code mis à jour, facilitant ainsi l'**intégration continue**. Jenkins travaille avec Git via le **plugin Git**.
 
 Cependant, connecter un référentiel privé GitHub à une instance privée de Jenkins peut s'avérer délicat.
 
@@ -430,7 +432,7 @@ C'est ainsi que fonctionnent les **Webhooks**. Une action sert de **déclencheur
 
 Un Webhook est une **requête HTTP** qui transfère des données lorsqu'elle est déclenchée par un **événement** et transporte un **message** vers une destination telle qu'un SMS ou une alerte d'appel téléphonique.
 
-Les Webhooks sont utilisés pour les notifications en **temps réel**, afin que votre système puisse être mis à jour dès que l'événement a lieu. Ce système est très utilisé dans le **DevOps** afin d'avoir un suivi granulaire de nos systèmes.
+Les Webhooks sont utilisés pour les notifications en **temps réel**, afin que votre système puisse être mis à jour dès que l'événement a lieu et ainsi permettre d'avoir un suivi granulaire de vos systèmes.
 
 En termes plus techniques, la plupart des Webhooks sont configurés en tant que points de **rappel HTTP** définis par l'utilisateur. Ils nous permettent d'enregistrer une URL `http://` ou `https://` où les données d'événements peuvent être stockées aux formats [JSON](https://en.wikipedia.org/wiki/JSON) ou [XML](https://en.wikipedia.org/wiki/XML).
 
@@ -495,6 +497,8 @@ Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cl
 </p>
 
 <br>
+
+#%%
 
 ## B - Premier pas sur Jenkins
 
