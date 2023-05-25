@@ -219,7 +219,8 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 # II - Installation de Jenkins
 
 Nous allons installer Jenkins via Docker avec l'image officielle.
-Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
+
+> Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
 
 ```shell
 docker pull jenkins/jenkins
@@ -227,8 +228,7 @@ docker pull docker:dind
 docker network create jenkins
 ```
 
-Puis lançons le premier conteneur Docker avec la commande :
-> Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.
+> Puis lançons le premier conteneur Docker avec la commande :
 
 ```shell
 docker run \
@@ -245,9 +245,9 @@ docker run \
   docker:dind \
   --storage-driver overlay2
 ```
+<div class="alert alert-info">Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.</div>
 
-Dans un fichier que nous nommerons `Dockerfile`, nous allons recopier les lignes suivantes :
-> Ce script va permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés.
+> Dans un fichier que nous nommerons `Dockerfile`, nous allons recopier les lignes suivantes :
 
 ```dockerfile
 FROM jenkins/jenkins:2.346.3-jdk11
@@ -263,14 +263,15 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.6 docker-workflow:1.29"
 ```
+<div class="alert alert-info">Ce script va permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés.</div>
 
-Lançons la commande suivante pour construire notre image Docker :
+> Lançons la commande suivante pour construire notre image Docker :
 
 ```shell
 docker build -t myjenkins-blueocean:2.346.3-1 .
 ```
 
-Enfin, démarrons Jenkins via ce nouveau conteneur Docker :
+> Enfin, démarrons Jenkins via ce nouveau conteneur Docker :
 
 ```shell
 docker run \
@@ -292,13 +293,13 @@ docker run \
 Pour ne pas recopier ces longues commandes Docker, vous pouvez passer par des <code>alias</code>, pour les rendre permanent, vous pouvez apprendre en faire depuis ce <a href="https://www.linuxtricks.fr/wiki/personnaliser-son-shell-alias-couleurs-bashrc-cshrc">lien</a>.
 </div>
 
-Après avoir lancer les conteneurs Docker, nous pouvons accéder à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. Nous arrivons alors sur la page ci-dessous:
+> Après avoir lancer les conteneurs Docker, nous pouvons accéder à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. Nous arrivons alors sur la page ci-dessous:
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/unlock.png" style="width:65%">
 </p>
 
-Pour générer le mot de passe demandé, exécutons la commande suivante :
+> Pour générer le mot de passe demandé, exécutons la commande suivante :
 
 ```shell
 docker logs jenkins-blueocean
@@ -318,7 +319,7 @@ Une fois le mot de passe , nous arriverons sur la page suivante :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/custo.png" style="width:65%">
 </p>
 
-Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez le formulaire avec les informations requises.
+> Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez le formulaire avec les informations requises.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-admin-user.png" style="width:65%">
