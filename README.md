@@ -463,7 +463,9 @@ Dans le formulaire, nous devons remplir le champ `Payload URL`. Nous allons donc
 - L'endpoint `github-webhook`
 
 Le contenu complet sera donc `http://votreadesseip:8080/github-webhook/`. Vous devrez remplacer `votreadresseip` par l'adresse IP de votre serveur.
-
+<div class="alert alert-warning">
+	Si vous travaillez en local et non sur la VM fournie par DataScientest et que vous ne souhaitez pas indiquer votre adresse IP personnelle, veuillez vous référérer à la partie complément de ce chapitre. 
+</div>
 Pour le champ `Content type`, nous choisirons `application/json`.
 
 <p align="center">
@@ -496,6 +498,40 @@ Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cl
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/kubernetes.png" style="width:60%">
 </p>
+
+### Complément
+
+Cette partie s'adresse aux personnes ne faisant pas les excercices sur la VM fournie par DataScientest.
+
+Nous ne pouvons pas donner une adresse locale comme `localhost`. Nous allons pour cela passer par un tunnel ssh `qui` va nous donner une adresse publique. Nous allons utiliser [ngrok](https://ngrok.com/), un logiciel permettant de créer des tunnels sécurisés entre un serveur local et Internet. Il agit en tant que passerelle inversée, permettant à des applications exécutées localement sur votre ordinateur de recevoir des requêtes externes. 
+
+> Téléchargez puis décompressez le fichier.
+
+> Lancez l'exécutable `ngrok` puis dans le terminal de l'application, lancez la commande suivante :
+
+```shell
+ngrok http port-associé-à-Jenkins
+```
+
+Votre terminal devrait afficher un message similaire à l'image ci-dessous :
+
+```shell
+ngrok by @inconshreveable                                                                                                                                                                            (Ctrl+C to quit)
+
+Session Status                online
+Session Expires               1 hour, 59 minutes
+Version                       2.3.40
+Region                        United States (us)
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    http://d4b48cd1f88c.ngrok.io -> http://localhost:8080
+Forwarding                    https://d4b48cd1f88c.ngrok.io -> http://localhost:8080
+
+Connections                   ttl     opn     rt1     rt5     p50     p90
+                              0       0       0.00    0.00    0.00    0.00
+```
+
+> Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
+
 
 <br>
 
