@@ -220,7 +220,7 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 
 Nous allons installer Jenkins via Docker avec l'image officielle.
 
-> Ouvrons une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
+> Ouvrez une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
 
 ```shell
 docker pull jenkins/jenkins
@@ -228,7 +228,10 @@ docker pull docker:dind
 docker network create jenkins
 ```
 
-> Puis lançons le premier conteneur Docker avec la commande :
+> Puis lancez le premier conteneur Docker avec la commande :
+
+Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.
+
 
 ```shell
 docker run \
@@ -245,9 +248,8 @@ docker run \
   docker:dind \
   --storage-driver overlay2
 ```
-<div class="alert alert-info">Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.</div>
 
-> Dans un fichier que nous nommerons `Dockerfile`, nous allons recopier les lignes suivantes :
+> Dans un fichier que vous nommerez `Dockerfile`, =recopiez les lignes suivantes qui vont permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés :
 
 ```dockerfile
 FROM jenkins/jenkins:2.346.3-jdk11
@@ -263,15 +265,14 @@ RUN apt-get update && apt-get install -y docker-ce-cli
 USER jenkins
 RUN jenkins-plugin-cli --plugins "blueocean:1.25.6 docker-workflow:1.29"
 ```
-<div class="alert alert-info">Ce script va permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés.</div>
 
-> Lançons la commande suivante pour construire notre image Docker :
+> Lancez la commande suivante pour construire notre image Docker :
 
 ```shell
 docker build -t myjenkins-blueocean:2.346.3-1 .
 ```
 
-> Enfin, démarrons Jenkins via ce nouveau conteneur Docker :
+> Enfin, démarrez Jenkins via ce nouveau conteneur Docker :
 
 ```shell
 docker run \
@@ -293,13 +294,15 @@ docker run \
 Pour ne pas recopier ces longues commandes Docker, vous pouvez passer par des <code>alias</code>, pour les rendre permanent, vous pouvez apprendre en faire depuis ce <a href="https://www.linuxtricks.fr/wiki/personnaliser-son-shell-alias-couleurs-bashrc-cshrc">lien</a>.
 </div>
 
-> Après avoir lancer les conteneurs Docker, nous pouvons accéder à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. Nous arrivons alors sur la page ci-dessous:
+> Après avoir lancer les conteneurs Docker, accédez à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. 
+
+Nous arrivons alors sur la page ci-dessous:
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/unlock.png" style="width:65%">
 </p>
 
-> Pour générer le mot de passe demandé, exécutons la commande suivante :
+> Pour générer le mot de passe demandé, exécutez la commande suivante :
 
 ```shell
 docker logs jenkins-blueocean
@@ -313,13 +316,13 @@ docker logs jenkins-blueocean
 Si vous avez besoin d'accéder au répertoire <code>/var/jenkins_home</code>, qui contient des informations relatives à Jenkins, lancez la commande <code>docker exec -it jenkins-blueocean bash</code>.
 </div>
 
-Une fois le mot de passe , nous arriverons sur la page suivante :
+Une fois le mot de passe entré, nous arriverons sur la page suivante :
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/custo.png" style="width:65%">
 </p>
 
-> Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez le formulaire avec les informations requises.
+> Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez alors le formulaire avec les informations requises.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-admin-user.png" style="width:65%">
@@ -339,35 +342,31 @@ Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le **
 
 #%%
 
-# III - Configuration de GitHub pour Jenkins
+# III - Premiers pas sur Jenkins
 
 <br>
 
-## **A - Installation du plugin Github Integration**
+## **A - Plugins**
 
-Jenkins est un serveur CI (intégration continue), ce qui signifie qu'il doit **extraire** le code source d'un référentiel de code source pour créer un projet. Jenkins offre un excellent support pour divers systèmes de gestion de code source tels que Subversion, CVS, etc.
+Nous allons nous intéresser sur la paramétrisation de Jenkins, particulièrement aux **plugins de Jenkins**. Ce sont des composants essentiels qui étendent les fonctionnalités de base de Jenkins et permettent de personnaliser les flux de travail d'intégration continue selon les besoins spécifiques des projets.
 
-Github est un référentiel de code basé sur le Web qui fournit une plate-forme commune à de nombreux développeurs travaillant sur le **même code** ou projet pour télécharger et récupérer le code mis à jour, facilitant ainsi l'**intégration continue**. Jenkins travaille avec Git via le **plugin Git**.
-
-Cependant, connecter un référentiel privé GitHub à une instance privée de Jenkins peut s'avérer délicat.
-
-Pour effectuer la configuration de GitHub, assurons-nous que la connectivité Internet est présente sur la machine sur laquelle Jenkins est installé.
-
-- Dans l'écran d'accueil de Jenkins (tableau de bord Jenkins), cliquons sur l'option **Manage Jenkins** sur le côté gauche de l'écran.
+Dans l'écran d'accueil de Jenkins (tableau de bord Jenkins), cliquons sur l'option **Administrer Jenkins** (*Manage Jenkins*) situé sur le côté gauche du dashboard.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_jenkins.png" style="width:60%">
 </p>
 
-- À présent, cliquons sur **Manage plugins**. Nous remarquons plusieurs onglets, mais nous allons nous intéresser à l'onglet **Manage Plugin**. Il s'agit d'une fonctionnalité de Jenkins qui permet d'améliorer son usage.
+À présent, focalisons nous sur la partie *System Configuration*, nous remarquons plusieurs onglets mais nous allons nous intéresser à l'onglet **Gestion des plugins** (*Manage plugins*). Il s'agit d'une fonctionnalité de Jenkins qui permet d'améliorer son usage.
 
 Il y a plus de 1800 plugins pour Jenkins, parmi ceux-ci, on peut notamment citer les intégrations avec les différents **systèmes de contrôle de version** (Git, Mercurial, SVN), Kubernetes, Docker et même des services de **Cloud Computing** (AWS, Azure, GCP).
+
+>  Cliquez sur l'option "Gestion des plugins"
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_plugins.png" style="width:60%">
 </p>
 
-- Dans la page suivante, cliquons sur l'onglet **Available**. Les plugins sont regroupés dans 4 onglets :
+Sur la page *Plugin Manager*, nous pouvons voir que les plugins sont regroupés dans 4 onglets :
 
   - `Mises à jour/Updated ` qui liste les plugins installés pour lesquels des mises à jour sont disponibles.
 
@@ -385,14 +384,22 @@ Il y a plus de 1800 plugins pour Jenkins, parmi ceux-ci, on peut notamment citer
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/available_plugins.png" style="width:60%">
 </p>
 
-- L'onglet **Available** nous donne une liste des plugins disponibles au téléchargement. Dans le champ de recherche, entrons `github integration` et cochons sur la checkbox afin de sélectionner le plugin `github integration`:
+L'onglet **Available** nous donne une liste des plugins disponibles au téléchargement. 
+
+> Dans le champ de recherche de l'onglet **Diponibles**, entrez `github integration` et cochez sur la checkbox afin de sélectionner le plugin `github integration`:
+
+**Github** est un référentiel de code basé sur le Web qui fournit une plate-forme commune à de nombreux développeurs travaillant sur le **même code** ou projet pour télécharger et récupérer le code mis à jour, facilitant ainsi l'**intégration continue**. Le plugin **plugin Git** va fournir à Jenkins plusieurs fonctionnalités pour améliorer le flux de travail de développement avec GitHub.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/install_github_integration.png" style="width:60%">
 </p>
 
-- Cliquons sur "**install without restart**". Le téléchargement du plug-in prendra un certain temps en fonction de notre connexion Internet et sera installé automatiquement.
+> Cliquez sur "**install without restart**". 
 
+<div class="alert alert-warning">
+Le téléchargement du plug-in prendra un certain temps en fonction de notre connexion Internet et sera installé automatiquement.
+</div>
+	
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/download_githubintegration_done.png" style="width:60%">
 </p>
@@ -535,11 +542,8 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 <br>
 
-#%%
+## C - Création et utilisation d'un Projet
 
-## B - Premier pas sur Jenkins
-
-### Création et utilisation d'un Projet
 
 Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique Hello World.
 
@@ -588,6 +592,8 @@ Sur cette nouvelle page, le dashboard est différent et il y apparaît un onglet
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/resultat.png" style="width:65%">
 </p>
 
+Bravo, nous avons réalisé notre premier projet sur Jenkins!
+
 <div class="alert alert-info"><i class="icon circle info"></i>
 Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
 </div>
@@ -598,6 +604,8 @@ Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lign
 # III - Pipeline Jenkins
 
 <br>
+
+Précédemment, nous avons vu la fonctionnalité Freestyle Project nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à *None* bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le **Pipeline**. Dans ce module, nous utiliserons le logiciel de versioning Git.
 
 ## **A - Présentation**
 
