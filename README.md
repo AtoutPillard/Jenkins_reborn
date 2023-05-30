@@ -634,8 +634,6 @@ Il s'agit essentiellement de suivre la discipline du **"pipeline as code"**. Ain
 
 Vous trouverez ci-dessous quelques-unes des raisons que l'on pourrait envisager avant d'utiliser le pipeline Jenkins pour l'automatisation des tests Jenkins (avec **Selenium** par exemple) :
 
-- En utilisant **Groovy DSL** (Domain Specific Language), il modélise des pipelines simples à complexes sous forme de code.
-
 - Le code est stocké sous la forme d'un fichier texte appelé **"Jenkinsfile"** qui peut être scanné dans **Source Code Management**.
 
 - Il prend en charge les pipelines complexes en ajoutant des boucles **conditionnelles**, des fourches ou des opérations de **jointure** et en autorisant des tâches d'exécution parallèles.
