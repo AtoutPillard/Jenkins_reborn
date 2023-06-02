@@ -167,7 +167,7 @@ Enfin, puisqu'il s'agit d'un outil **open-source**, il est régulièrement mis �
 
 - Jenkins prend également en charge l'architecture basée sur le **cloud** afin que nous puissions déployer Jenkins sur des plates-formes basées sur le cloud.
 
-**e.2 - Inconvénients de Jenkins**
+### e.2 - Inconvénients de Jenkins
 
 - Son interface est **obsolète** et peu conviviale par rapport aux tendances actuelles de l'interface utilisateur.
 
@@ -218,7 +218,8 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 
 # II - Installation de Jenkins
 
-Nous allons installer Jenkins via Docker avec l'image officielle.
+Nous allons, à présent, installer Jenkins via Docker avec son image officielle. Pour information, Docker est une plateforme open-source utilisée pour automatiser le déploiement d'applications dans des conteneurs. Ces conteneurs Docker permettent d'emballer une application et toutes ses dépendances dans une unité portable et légère, ce qui va faciliter son exécution et son déploiement sur différentes plateformes.
+Quant à l'image Docker, il s'agit d'un paquet autonome et exécutable qui contient tout le nécessaire pour exécuter une application.
 
 > Ouvrez une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
 
@@ -249,7 +250,7 @@ docker run \
   --storage-driver overlay2
 ```
 
-> Dans un fichier que vous nommerez `Dockerfile`, =recopiez les lignes suivantes qui vont permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés :
+> Dans un fichier que vous nommerez `Dockerfile`, recopiez les lignes suivantes qui vont permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés :
 
 ```dockerfile
 FROM jenkins/jenkins:2.346.3-jdk11
@@ -410,6 +411,7 @@ Une fois terminé, le plugin sera disponible en option lors de la configuration 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github-logo.webp" style="width:30%">
 </p>
 
+
 ## **B - Intégration de Jenkins avec GitHub**
 
 ### b.1 - Création du dépôt Github
@@ -542,12 +544,64 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 <br>
 
-## C - Création et utilisation d'un Projet
+## C - Création et utilisation d'un projet freestyle
 
 
 Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique Hello World.
 
-Pour cela, cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. Donnez un nom à votre projet, puis sélectionnez l'option "Construire un projet free-style" (_Freestyle project_) et appuyez sur le bouton OK.
+> Cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. 
+
+Nous arriverons alors sur la page des jobs Jenkins qui sont un ensemble donné de tâches qui s'exécutent **séquentiellement** tel que défini par l'utilisateur. Toute automatisation est implémentée dans Jenkins est un `Job` Jenkins. Ces travaux constituent une partie importante du processus de construction de Jenkins. Nous pouvons créer et construire des Jobs Jenkins pour tester et déployer notre application ou notre projet.
+Il existe différents types de Job Jenkins disponibles à des fins différentes. En fonction de la complexité et de la nature de notre projet, nous pouvons choisir celui qui correspond le mieux à nos besoins.
+
+Examinons brièvement les différents types de job à Jenkins :
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 1066px">
+<colgroup>
+<col style="width: 201.333333px">
+<col style="width: 864.333333px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-g7sd">Type de Jobs</th>
+    <th class="tg-g7sd">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-isc8">Projet Freestyle</td>
+    <td class="tg-isc8">C'est la fonctionnalité centrale et la plus largement utilisée dans Jenkins. Il s'agit d'un travail de build Jenkins disponible offrant plusieurs opérations. Grâce à cette option, vous pouvez créer et exécuter des pipelines ou des scripts de manière transparente.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Projet Maven</td>
+    <td class="tg-lboi">Si votre travail consiste à gérer et à créer des projets contenant des fichiers POM, vous préférez utiliser Maven Project pour créer des travaux dans Jenkins. En choisissant cette  option, Jenkins, par défaut, sélectionnera les fichiers POM, effectuera des configurations et exécutera des build. Un fichier POM (Project Object Model) est un élément central de la configuration d'un projet Maven, décrivant son contenu, ses dépendances et les actions à effectuer lors de sa construction. Un fichier POM est un fichier XML utilisé par Maven pour définir la configuration, les dépendances et la structure d'un projet logiciel Java.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Pipeline</td>
+    <td class="tg-isc8">Un travail basé sur un Jenkinsfile, offrant une approche plus puissante et flexible pour la création de pipelines et de flux de travail d'intégration continue et de déploiement continu (CI/CD).</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Projet multi-configuration</td>
+    <td class="tg-lboi">Si vous travaillez sur un projet nécessitant plusieurs configurations, vous devez utiliser l'option "Projet multi-configuration". Cette option permet de créer plusieurs configurations pour tester dans plusieurs environnements.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Organisation GitHub</td>
+    <td class="tg-isc8">Cette option analyse le compte GitHub de l'utilisateur pour tous les référentiels d'une organisation spécifique, correspondant aux marqueurs définis pour automatiser les opérations associées.</td>
+  </tr>
+</tbody>
+</table>
+
+> Donnez un nom à votre projet, puis sélectionnez l'option `Construire un projet free-style` (_Freestyle project_) et appuyez sur le bouton **OK**.
 
 Vous devriez obtenir la page suivante :
 
@@ -717,6 +771,25 @@ pipeline {
 Le pipeline déclaratif Jenkins devrait être le moyen préféré de créer un Job Jenkins car il offre un riche ensemble de fonctionnalités, une courbe d'apprentissage réduite et aucun prérequis pour apprendre un langage de programmation comme Groovy juste pour écrire du code de pipeline.
 
 Nous pouvons également valider la syntaxe du code de pipeline déclaratif avant d'exécuter le Job. Cela permet d'éviter de nombreux problèmes d'exécution avec le script de construction.
+
+## **D - Création d'un pipeline**
+
+Nous allons, dès à présent, créer un pipeline déclaratif qui va être composé de trois phases: *Build*, *Test* et *Deploy*. Nous devons tout d'abord réaliser un nouveau projet.
+
+> Dirigeons nous sur `New Item` qui est la première option du dashboard, comme lorsque nous avions fait le Freestyle Project en donnant le nom `datascientest-ci-cd` à notre projet.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/new_item.png" style="width:60%">
+</p>
+
+Nous devons donner un nom à notre projet et ensuite choisir un type de projet.
+
+Nous appellerons `datascientest-ci-cd` et nous choisirons le type `pipelines` car nous partirons de notre fichier `Jenkinsfile` afin de décrire les tâches à automatiser :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/pipeline_projet.png" style="width:60%">
+</p>
+
 
 ## **D - Syntaxe déclarative du pipeline Jenkins**
 
