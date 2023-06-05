@@ -541,10 +541,107 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 > Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
 
+## **C - Credentials**
+Sur Jenkins, les credentials font référence aux informations d'identification nécessaires pour accéder à différents services, systèmes ou environnements lors de l'exécution de pipelines ou de jobs.
+
+Allons, à présent, créer nos éléments de connexion sur Jenkins. 
+
+> Cliquez sur le bouton `Dashboard` afin de revenir sur le tableau de bord puis sur le menu `Manage Jenkins` et une fois sur cette vue, cliquez sur le menu `Manage Credentials` :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_credentials.png" style="width:100%">
+</p>
+
+> Cliquez ensuite sur `system` :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/system.png" style="width:100%">
+</p>
+
+> Cliquez sur `Global credentials (unrestricted)` .
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/global.png" style="width:100%">
+</p>
+
+> Sur la nouvelle vue, cliquez sur le bouton `add credentials` :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/add_credentials.png" style="width:100%">
+</p>
+
+Nous pouvons maintenant choisir le type de credentials. Examinons les différents types de credentials Jenkins :
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 1066px">
+<colgroup>
+<col style="width: 201.333333px">
+<col style="width: 864.333333px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-g7sd">Type de Credentials</th>
+    <th class="tg-g7sd">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-isc8">Nom d'utilisateur et mot de passe</td>
+    <td class="tg-isc8">Il s'agit d'un nom d'utilisateur et d'un mot de passe associés ou token à un compte particulier. Ces informations peuvent être utilisées pour s'authentifier sur des serveurs, des services ou des applications.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">SSH Username with Private Key</td>
+    <td class="tg-lboi">Ce type de credentials est utilisé pour l'authentification SSH. Il comprend un nom d'utilisateur et une clé privée correspondante pour établir une connexion sécurisée à un serveur distant.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Secret File</td>
+    <td class="tg-isc8">Il s'agit d'un fichier contenant des informations sensibles, telles que des clés d'API ou des certificats, qui peuvent être utilisées par les jobs Jenkins.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Secret Text</td>
+    <td class="tg-lboi">Vous devez fournir un nom descriptif et la valeur secrète. Jenkins stocke ensuite cette valeur de manière sécurisée, en la chiffrant avant de l'enregistrer dans son système de stockage.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Certificate</td>
+    <td class="tg-isc8">Ce type de credentials est utilisé pour stocker des certificats numériques, tels que des certificats SSL/TLS.</td>
+  </tr>
+</tbody>
+</table>
+
+> Créez une variable de type `secret text` afin d'y définir le mot de passe utilisé par Jenkins pour pousser nos images au sein de Dockerhub. Nous appellerons cette variable `DOCKER_HUB_PASS`:
+
+<div class="alert alert-info"><i class="icon circle info"></i>
+Dans <code>secret</code> il faudra renseigner le mot de passe de votre compte dockerHub
+</div>
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/secret_test.png" style="width:100%">
+</p>
+
+Ceci sera la liste de nos informations secretes :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/variables_list.png" style="width:100%">
+</p>
+
 
 <br>
 
-## C - Création et utilisation d'un projet freestyle
+
+#%%
+
+# III Jobs et Build 
+
+## A - Projet freestyle
 
 
 Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique Hello World.
@@ -652,10 +749,9 @@ Bravo, nous avons réalisé notre premier projet sur Jenkins!
 Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
 </div>
 
-#%%
 
 
-# III - Pipeline Jenkins
+## **B - Pipeline Jenkins**
 
 <br>
 
@@ -774,7 +870,7 @@ Nous pouvons également valider la syntaxe du code de pipeline déclaratif avant
 
 ## **D - Création d'un pipeline**
 
-Nous allons, dès à présent, créer un pipeline déclaratif qui va être composé de trois phases: *Build*, *Test* et *Deploy*. Nous devons tout d'abord réaliser un nouveau projet.
+Nous allons, dès à présent, créer un pipeline déclaratif qui va être composé de trois phases: *Building*, *Testing* et *Deploying*. Nous devons tout d'abord réaliser un nouveau projet.
 
 > Dirigeons nous sur `New Item` qui est la première option du dashboard, comme lorsque nous avions fait le Freestyle Project en donnant le nom `datascientest-ci-cd` à notre projet.
 
@@ -790,12 +886,377 @@ Nous appellerons `datascientest-ci-cd` et nous choisirons le type `pipelines` ca
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/pipeline_projet.png" style="width:60%">
 </p>
 
+En cliquant sur le bouton `OK`, notre Job Jenkins sera prêt à être configuré. Nous pouvons créer autant de Jobs Jenkins selon nos besoins. La procédure de création de Job reste la même quelque soit le type de Job. Seuls les paramètres de configurations pourront varier en fonction du type de Jobs.
+
+### **B - Configuration de la gestion du code source**
+
+Nous commençons par remplir la section "Description" qui est un simple champ dans lequel nous remplissons la description sommaire de notre Job :
+
+```shell
+Ceci est notre projet Jenkins ci/cd chez Datascientest
+```
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/description_job.png" style="width:60%">
+</p>
+
+Outre le champ Description, d'autres options sont disponibles dans la section **Général**, parlons de certains champs du formulaire qui sont des cases à cocher :
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-cly1{text-align:left;vertical-align:middle}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 1086px">
+<colgroup>
+<col style="width: 205.333333px">
+<col style="width: 880.333333px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-g7sd">Choix</th>
+    <th class="tg-g7sd">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-isc8">Discard old builds</td>
+    <td class="tg-isc8">Si nous préférons supprimer les anciennes versions lors du lancement d'une nouvelle version, utilisez cette option.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Do not allow concurrent builds</td>
+    <td class="tg-lboi">Si nous préférons interdire les constructions simultanées.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Pipeline</td>
+    <td class="tg-isc8">Freestyle Project n'est souvent pas une  bonne option pour créer des Jobs Jenkins. Par conséquent, Pipeline est la meilleure option. Utilisez l'option Pipeline pour créer des tâches Jenkins, en particulier lorsque vous travaillez sur des activités de longue durée.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">GitHub project</td>
+    <td class="tg-lboi">Si nous avons du code source au sein d'un dépôt GitHub et que nous souhaitons l'utiliser dans notre job Jenkins, utilisons l'option Projet GitHub. Lors de la sélection de cet avis, assurons-nous de spécifier l'URL GitHub.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">This project is parameterized</td>
+    <td class="tg-isc8">Cette option nous permet de créer des builds avec différents paramètres qui seraient transmis lors de l'exécution. Chaque paramètre aura un nom et une valeur spécifiques.</td>
+  </tr>
+  <tr>
+    <td class="tg-cly1">Throttle builds</td>
+    <td class="tg-cly1">Choisissez l'option Throttle Builds lorsque vous travaillez sur un projet avec un temps minimum requis entre les builds en fonction du taux maximum attendu.</td>
+  </tr>
+</tbody>
+</table>
+
+Une fois que nous avons ajouté la description, passons à la section suivante.
+
+### **C - Projet Github**
+
+Nous devons cocher la case `GitHub project` et remplir le formulaire qui apparaîtra en utilisant l'url de notre dépôt git:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_project.png" style="width:60%">
+</p>
+
+Jenkins utilise Git comme outil de gestion de version de code source. Après avoir terminé la gestion du code source, nous allons ensuite vérifier l'option `Jenkins Build Triggers`.
+
+### **D - Déclencheur Jenkins**
+
+Avant l'étape de construction de Jenkins, le déclenchement du travail est essentiel. La création de déclencheurs dans Jenkins nous permet d'exécuter une tâche à **chaque occurrence**. En d'autres termes, chaque fois qu'il y a un changement dans le code source, Jenkins déclenche automatiquement une **construction** avec la mise à jour la plus récente.
+
+Sur la partie `Build Triggers` du Job Jenkins, plusieurs options sont disponibles. Analysons chacunes en détail:
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-cly1{text-align:left;vertical-align:middle}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 1086px">
+<colgroup>
+<col style="width: 205.333333px">
+<col style="width: 880.333333px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-g7sd">Choix</th>
+    <th class="tg-g7sd">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-isc8">Build after other projects are built</td>
+    <td class="tg-isc8">Avec cette option, une nouvelle génération n'est déclenchée qu'après l'exécution réussie d'autres générations.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Build periodically</td>
+    <td class="tg-lboi">Si vous choisissez d'exécuter des builds périodiquement, choisissez cette option. Assurez-vous de spécifier l'heure à laquelle vous souhaitez que la génération démarre. Jenkins mettra en place une sorte de CRON afin de construire périodiquement notre Job</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">GitHub Pull Requests</td>
+    <td class="tg-isc8">L'utilisation de cette option de déclencheur de génération permet l'intégration avec les activités GitHub Pull Requests and Issues. De plus, il lance des exécutions en sortie.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">GitHub hook trigger for GITScm polling</td>
+    <td class="tg-lboi">Utilisez cette option si vous devez exécuter vos builds à l'aide des webhooks GitHub.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Poll SCM</td>
+    <td class="tg-isc8">Semblable à l'option de déclencheur de génération périodique de Jenkins Build, nous devons spécifier une minuterie pour Poll SCM. Cependant, l'option SCM dans Jenkins exécute la génération uniquement lorsqu'il y a un changement de code pendant cette période.</td>
+  </tr>
+  <tr>
+    <td class="tg-cly1">Trigger builds remotely</td>
+    <td class="tg-cly1">Choisissez les builds déclenchés à distance si vous avez besoin de déclencher de nouveaux builds à l'aide d'une URL dédiée.</td>
+  </tr>
+</tbody>
+</table>
+
+Nous devons cocher la case `GitHub hook trigger for GITScm polling` pour que GitHub puisse envoyer des Webhooks qui déclencherons la construction de notre Job.
+
+Ensuite, nous devons spécifier le chemin du fichier **Jenkinsfile** depuis notre dépôt. Jenkins essaiera par défaut de le récupérer à la racine de ce dernier. Nous devons donc lui renseigner l'URL `SSH`.
+
+Jenkins essaiera immédiatement de vérifier s'il peut récupérer le fichier depuis notre dépôt avant de sauvegarder le projet. 
+
+Pour le cours, nous créerons le fichier `Jenkinsfile` au sein de notre dépôt Github
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/webhook_pipeline.png" style="width:60%">
+</p>
+
+Nous devons ensuite spécifier le dépôt dans lequel se trouve le fichier `Jenkinsfile` ainsi que le chemin ou le trouver dans le dépôt. Jenkins essaiera par défaut de récupérer le Jenkinsfile à la racine de notre dépôt Github. Nous devons récupérer l'URL en SSH de notre dépôt et le passer à Jenkins.
+
+Jenkins essaiera immédiatement de vérifier s'il peut bien récupérer le fichier dans le dit dépôt avant de sauvegarder le projet . Pour le cours, nous créerons le fichier `Jenkinsfile` depuis au sein de notre dépôt Github.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkinsfile_from_scm.png" style="width:60%">
+</p>
+
+Nous choisissons Git comme `SCM` et définissons le chemin de notre dépôt Github . Nous définissons également sur `None` le champ Credentials car notre dépôt est public et Jenkins pourra récupéré le fichier `Jenkinsfile` sans avoir besoin de s'authentifier.
+
+Nous laisserons le reste des champs par défaut et nous définirons dans le champ `Script Path` la valeur Jenkinsfile puisse que le fichier `Jenkinsfile` se trouvera à la racine de notre projet. S'il avait été dans un répertoire appelé `pipeline`, nous aurions rempli à la place `pipeline/Jenkinsfile`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkinsfile_path.png" style="width:60%">
+</p>
+
+Une fois terminé, nous pouvons sauvegarder notre travail en cliquant sur le bouton `Save`.
+
 
 ## **D - Syntaxe déclarative du pipeline Jenkins**
 
+### d.1 - Stages et Stage
+
+La section `stages` permet de générer différentes étapes sur le pipeline qui seront visualisées sous la forme de différents segments lors de l'exécution de la tâche.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-stages.jpg" style="width:60%">
+</p>
+
+Jenkins divise graphiquement l'exécution du pipeline en fonction des étapes définies et affiche leur durée et si elle a réussi ou non. La directive `stage` va dans la section `stages` et devrait contenir une directive [steps](https://docs.cloudbees.com/docs/admin-resources/latest/pipeline-syntax-reference-guide/declarative-pipeline#steps), une directive `agent` facultative ou d'autres directives spécifiques à une étape.
+
+En pratique, tout le travail réel effectué par un Pipeline sera enveloppé dans une ou plusieurs directives `stage`.
+
+```groovy
+pipeline {
+	agent any
+	stages {
+		stage ('build') {
+			...
+		}
+		stage ('test: integration-&-quality') {
+			...
+		}
+		stage ('test: functional') {
+			...
+		}
+		stage ('test: load-&-security') {
+			...
+		}
+		stage ('approval') {
+			...
+		}
+        	stage ('deploy:dev') {
+			...
+		}
+         stage ('deploy:staging') {
+			...
+		}
+		stage ('deploy:prod') {
+			...
+		}
+	}
+}
+```
+
+> Créez votre premier pipeline avec trois stages nommés `Building`, `Testing` et `Deploying` 
+
+%%SOLUTION%%
+```groovy
+pipeline {
+    stages {
+        stage('Building') {
+
+        }
+        stage('Testing') {
+
+        }
+	stage('Deploying') {
+
+        }
+    }
+}
+```
+%%SOLUTION%%
+
+
+<br>
+
+### d.2 - Steps
+
+Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Love') {
+            steps {
+                echo 'I love Datascientest'
+            }
+        }
+    }
+}
+```
+
+Pour Linux et MacOS, `sh` est pris en charge. Si nous voulons enchaîner plusieurs commandes, nous pouvons utiliser `sh'''` de la façon suivante :
+
+```groovy
+steps {
+    sh 'echo "I love Datascientest"'
+    sh '''
+    echo "A multiline step"'
+    cd /tests/results
+    ls -lrt
+    '''
+}
+```
+
+Pour Windows, bat ou powershell peut être utilisé de la façon suivante :
+
+```groovy
+steps {
+    bat "mvn clean test -Dsuite=SMOKE_TEST -Denvironment=QA"
+    powershell ".\funcional_tests.ps1"
+}
+```
+
+<br>
+
+> En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
+> Dans la phase Building, vous devez installer les librairies contenues dans le fichier requirements.txt
+> Dans la phase Testing, vous devez lancer les tests unitaires
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+
+            }
+        }
+    }
+}
+```
+%%SOLUTION%%
+
+</br>
+
+
+### d.7 - script
+
+L' étape `script` prend un bloc de pipeline scripté et l'exécute dans le pipeline déclaratif. Cette étape est utilisée pour ajouter des phrases de pipeline scripté dans une phrase déclarative, offrant ainsi encore plus de fonctionnalités. Cette étape doit être incluse au niveau `stage`.
+
+Plusieurs fois, des blocs de scripts peuvent être utilisés sur différents projets. Ces blocs vous permettent d'étendre les fonctionnalités de Jenkins et peuvent être implémentés en tant que bibliothèques partagées. Plus d'informations à ce sujet peuvent être trouvées sur [les bibliothèques partagées Jenkins](https://jenkins.io/doc/book/pipeline/shared-libraries/).
+
+De plus, les bibliothèques partagées peuvent être importées et utilisées dans le bloc **"script"**, étendant ainsi les fonctionnalités du pipeline.
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                echo 'Testing schools'
+                script {
+                    def schools = ['Datascientest', 'DevUniversity']
+                    for (int i = 0; i < schools.size(); ++i) {
+                        echo "Testing the ${schools[i]} school"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+> Dans la phase Deploying, faites une section script dans lequel vous allez créer une image Docker à partir du Dockerfile et lancer le conteneur Docker
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t shinbi/mlops_tp5:latest .
+		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		'''
+		}
+            }
+        }
+    }
+}
+```
+%%SOLUTION%%
+
+<br>
+
 ### d.1 - Agent
 
-Jenkins offre la possibilité d'effectuer des builds distribués en les déléguant à des nœuds "agents". Cela vous permet d'exécuter plusieurs projets avec une seule instance du serveur Jenkins, tandis que la **charge de travail** est distribuée à ses **agents**. Les détails sur la configuration d'un mode maître/agent sortent du cadre de ce blog.
+Jenkins offre la possibilité d'effectuer des builds distribués en les déléguant à des nœuds "agents". Cela vous permet d'exécuter plusieurs projets avec une seule instance du serveur Jenkins, tandis que la **charge de travail** est distribuée à ses **agents**. Les détails sur la configuration d'un mode maître/agent sortent du cadre de ce cours.
 
 Veuillez vous référer aux [versions distribuées de Jenkins](https://wiki.jenkins.io/display/JENKINS/Distributed+builds#Distributedbuilds-Nodelabelsforagents) pour plus d'informations.
 
@@ -817,19 +1278,19 @@ pipeline {
 }
 ```
 
-Afin de prendre en charge la grande variété de cas d'utilisation, la section `agent` prend en charge quelques types de paramètres différents. Ces paramètres peuvent être appliqués au niveau supérieur du bloc`pipeline` ou dans chaque directive `stage`.
+Afin de prendre en charge la grande variété de cas d'utilisation, la section `agent` prend en charge quelques types de paramètres différents. Ces paramètres peuvent être appliqués au niveau supérieur du bloc `pipeline` ou dans chaque directive `stage`.
 
 - `any`: Exécutez le Pipeline, ou l'étape, sur n'importe quel agent disponible.
 
-- `none`: Lorsqu'il est appliqué au niveau supérieur du bloc`pipeline`, aucun agent global ne sera alloué pour l'ensemble de l'exécution du Pipeline et chaque section `stage` devra contenir sa propre section `agent`.
+- `none`: Lorsqu'il est appliqué au niveau supérieur du bloc `pipeline`, aucun agent global ne sera alloué pour l'ensemble de l'exécution du Pipeline et chaque section `stage` devra contenir sa propre section `agent`.
 
 - `label`: Exécute le pipeline, ou l'étape, sur un agent disponible dans l'environnement Jenkins avec l'**étiquette** fournie.
 
 Exemple : `agent { label 'datascientest1' }`.
 
-Il est également possible de définir plusieurs label et de faire un **"ou"** logique : `agent { label 'datascientest1 && datascientest2' }`.
+Il est également possible de définir plusieurs label et de faire un **"ou"** logique : `agent { label 'datascientest1 || datascientest2' }`.
 
-Mais aussi un **"et"** : `agent { label 'datascientest1 && datascientest2' }` en fonction du besoin.
+Mais aussi un **"et"** : `agent { label 'datascientest1 || datascientest2' }` en fonction du besoin.
 
 - `node`: désigne un noeud spécifique sur lequel nous voulons exécuter notre Job.
 
@@ -845,11 +1306,45 @@ agent {
 }
 ```
 
+> Ajoutez un agent de type `Any` à votre pipeline
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t shinbi/mlops_tp5:latest .
+		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		'''
+		}
+            }
+        }
+    }
+}
+```
+%%SOLUTION%%
+
 <br>
+
 
 ### d.2 - Environment
 
-La directive `environment` spécifie une séquence de paires clé-valeur qui seront définies comme des variables d'environnement pour toutes les étapes, ou des étapes spécifiques à une étape, selon l'emplacement de la directive `environment` dans le Pipeline.Cette directive peut être définie à la fois au niveau de l'étape ou du pipeline, ce qui déterminera la portée de ses définitions.
+La directive `environment` spécifie une séquence de paires clé-valeur qui seront définies comme des variables d'environnement pour toutes les étapes, ou des étapes spécifiques à une étape, selon l'emplacement de la directive `environment` dans le Pipeline. Cette directive peut être définie à la fois au niveau de l'étape ou du pipeline, ce qui déterminera la portée de ses définitions.
 
 Lorsque **"environnement"** est utilisé au niveau **"pipeline"**, ses définitions seront valides pour toutes les étapes du pipeline. Si, au contraire, il est défini dans une **"étape"**, il ne sera valable que pour l'étape en question.
 
@@ -911,7 +1406,44 @@ pipeline {
 }
 ```
 
+> Dans votre pipeline, créez une variable nommée `dockerhub` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction `credentials()` qui prend en entrée, l'id du credentials jenkins
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment {
+    	dockerhub = credentials('docker_jenkins')
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t shinbi/mlops_tp5:latest .
+		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		'''
+		}
+            }
+        }
+    }
+}
+```
+%%SOLUTION%%
+
 <br>
+
 
 ### d.3 - triggers
 
@@ -972,7 +1504,7 @@ pipeline {
 
 ### d.4 - post
 
-La section `post` définit les actions qui seront exécutées à la fin de l'exécution du pipeline. Un certain nombre de blocs de conditions de publication supplémentaires sont pris en charge dans la `post` section : `always`, `changed`, `failure`, `success`et `unstable`.
+La section `post` définit les actions qui seront exécutées à la fin de l'exécution du pipeline. Un certain nombre de blocs de conditions de publication supplémentaires sont pris en charge dans la `post` section : `always`, `changed`, `failure`, `success` et `unstable`.
 
 Ces blocs permettent l'exécution d'étapes à la fin de l'exécution du Pipeline et en fonction de l'**état** de cette Pipeline.
 
@@ -1005,122 +1537,32 @@ pipeline {
     }
 }
 ```
-<br>
 
-### d.5 - Stages et Stage
+Les sections de publication peuvent être ajoutées au niveau du pipeline ou sur chaque bloc `stage` et les phases qui y sont incluses sont exécutées une fois le stage ou le pipeline terminé.
 
-La section `stages` permet de générer différentes étapes sur le pipeline qui seront visualisées sous la forme de différents segments lors de l'exécution de la tâche.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-stages.jpg" style="width:60%">
-</p>
-
-Jenkins divise graphiquement l'exécution du pipeline en fonction des étapes définies et affiche leur durée et si elle a réussi ou non. La directive `stage` va dans la section `stages` et devrait contenir une directive [steps](https://docs.cloudbees.com/docs/admin-resources/latest/pipeline-syntax-reference-guide/declarative-pipeline#steps), une directive `agent` facultative ou d'autres directives spécifiques à une étape.
-
-En pratique, tout le travail réel effectué par un Pipeline sera enveloppé dans une ou plusieurs directives `stage`.
-
-```groovy
-pipeline {
-	agent any
-	stages {
-		stage ('build') {
-			...
-		}
-		stage ('test: integration-&-quality') {
-			...
-		}
-		stage ('test: functional') {
-			...
-		}
-		stage ('test: load-&-security') {
-			...
-		}
-		stage ('approval') {
-			...
-		}
-        	stage ('deploy:dev') {
-			...
-		}
-         stage ('deploy:staging') {
-			...
-		}
-		stage ('deploy:prod') {
-			...
-		}
-	}
-}
-```
-
-<br>
-
-### d.6 - Steps
-
-Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
+Étant donné que les phrases incluses dans un bloc de publication de pipeline seront exécutées à la fin du script, des tâches de nettoyage ou des notifications, entre autres, peuvent être effectuées ici :
 
 ```groovy
 pipeline {
     agent any
     stages {
-        stage('Love') {
+        stage('Greeting Datascientest') {
             steps {
-                echo 'I love Datascientest'
+                // Steps here
             }
+        }
+    }
+    post {
+        always {
+            echo "Pipeline finished Greeting datascientest"
+            sh "./datascientest-clean.sh"
         }
     }
 }
 ```
 
-Pour Linux et MacOS, `sh` est pris en charge. Si nous voulons enchaîner plusieurs commandes, nous pouvons utiliser `sh'''` de la façon suivante :
-
-```groovy
-steps {
-    sh 'echo "I love Datascientest"'
-    sh '''
-    echo "A multiline step"'
-    cd /tests/results
-    ls -lrt
-    '''
-}
-```
-
-Pour Windows, bat ou powershell peut être utilisé de la façon suivante :
-
-```groovy
-steps {
-    bat "mvn clean test -Dsuite=SMOKE_TEST -Denvironment=QA"
-    powershell ".\funcional_tests.ps1"
-}
-```
-
 <br>
 
-### d.7 - script
-
-L' étape `script` prend un bloc de pipeline scripté et l'exécute dans le pipeline déclaratif. Cette étape est utilisée pour ajouter des phrases de pipeline scripté dans une phrase déclarative, offrant ainsi encore plus de fonctionnalités. Cette étape doit être incluse au niveau `stage`.
-
-Plusieurs fois, des blocs de scripts peuvent être utilisés sur différents projets. Ces blocs vous permettent d'étendre les fonctionnalités de Jenkins et peuvent être implémentés en tant que bibliothèques partagées. Plus d'informations à ce sujet peuvent être trouvées sur [les bibliothèques partagées Jenkins](https://jenkins.io/doc/book/pipeline/shared-libraries/).
-
-De plus, les bibliothèques partagées peuvent être importées et utilisées dans le bloc **"script"**, étendant ainsi les fonctionnalités du pipeline.
-
-```groovy
-pipeline {
-    agent any
-    stages {
-        stage('Test') {
-            steps {
-                echo 'Testing schools'
-                script {
-                    def schools = ['Datascientest', 'DevUniversity']
-                    for (int i = 0; i < schools.size(); ++i) {
-                        echo "Testing the ${schools[i]} school"
-                    }
-                }
-            }
-        }
-    }
-}
-```
-<br>
 
 ### d.8 - Input
 
@@ -1169,22 +1611,22 @@ Les étapes du pipeline déclaratif Jenkins peuvent avoir d'autres étapes imbri
 ```groovy
 pipeline {
     agent none
-        stages {
-                    stage('Run Tests') {
-                            parallel {
-                                stage('Test On Windows') {
-                                	agent { label "windows" }
-                                steps {
-                               		 bat "run-tests.bat"
-                                }
-                    }
-                    stage('Test On Linux') {
+    stages {
+        stage('Run Tests') {
+            parallel {
+                stage('Test On Windows') {
+                    agent { label "windows" }
+                    steps {
+                        bat "run-tests.bat"
+                      }
+                  }
+                  stage('Test On Linux') {
                         agent { label "linux" }
-                            steps {
+                        steps {
                             sh "run-tests.sh"
-                            }
                     }
-             }
+                }
+            }
         }
     }
 }
@@ -1215,13 +1657,13 @@ Cette directive permet de définir une liste de paramètres à utiliser dans le 
 ```shell
 pipeline {
     agent any
-        parameters {
+    parameters {
         string(name: 'user', defaultValue: 'John', description: 'A user that triggers the pipeline')
-        }
+    }
     stages {
         stage('Trigger pipeline') {
             steps {
-            echo "Pipeline triggered by ${params.USER}"
+                echo "Pipeline triggered by ${params.user}"
             }
         }
     }
@@ -1230,44 +1672,7 @@ pipeline {
 
 <br>
 
-### d.11 - post
-
-Les sections de publication peuvent être ajoutées au niveau du pipeline ou sur chaque bloc `stage` et les phases qui y sont incluses sont exécutées une fois le stage ou le pipeline terminé. Plusieurs post-conditions peuvent être utilisées pour contrôler si la publication s'exécute ou non :
-
-- `always` : les étapes sont exécutées quel que soit l'état d'achèvement.
-
-- `changed` : ne s'exécute que si l'exécution aboutit à un état différent de celui de l'exécution précédente.
-
-- `failure` : les étapes sont exécutées uniquement si le pipeline ou l'étape échoue.
-
-- `success` : les étapes sont exécutées uniquement si le pipeline ou l'étape réussit.
-
-- `unstable` : les étapes sont exécutées uniquement si le pipeline ou l'étape est instable.
-
-Étant donné que les phrases incluses dans un bloc de publication de pipeline seront exécutées à la fin du script, des tâches de nettoyage ou des notifications, entre autres, peuvent être effectuées ici.
-
-```groovy
-pipeline {
-    agent any
-        stages {
-            stage('Greeting Datascientest') {
-                steps {
-                ...
-                }
-            }
-        }
-        post {
-        always {
-            echo “Pipeline finished Greeting datascientest”
-            sh ./datascientest-clean.sh
-        }
-    }
-}
-```
-
-<br>
-
-### d.12 - Tools
+### d.11 - Tools
 
 La directive `tools` peut être ajoutée soit au niveau du pipeline, soit à la première étape. Il vous permet de spécifier quelle version maven, jdk ou gradle utiliser sur votre script par exemple si vous vous trouver sur du code JAVA.
 
@@ -1289,27 +1694,27 @@ pipeline {
 
 <br>
 
-### d.13 - when
+### d.12 - when
 
 Les étapes du pipeline peuvent être exécutées en fonction des conditions définies dans une directive "quand". Si les conditions correspondent, les étapes définies dans l'étape correspondante seront exécutées. Il doit être défini au niveau de l'étape.
 
 Pour une liste complète des conditions et leurs explications, reportez-vous à [la directive when du pipeline déclaratif de Jenkins.](https://jenkins.io/doc/book/pipeline/syntax/#when) Les pipelines permettent d'effectuer des tâches sur des projets comportant plusieurs branches.
 
-C'est ce qu'on appelle les pipelines multibranches, où des actions spécifiques peuvent être entreprises en fonction du nom de la branche, comme `master`, `features`, `dévelopment`, entre autres. Nous pouvons écrire un exemple de pipeline qui exécutera les étapes pour la branche master :
+C'est ce qu'on appelle les pipelines multibranches, où des actions spécifiques peuvent être entreprises en fonction du nom de la branche, comme `master`, `features`, `development`, entre autres. Nous pouvons écrire un exemple de pipeline qui exécutera les étapes pour la branche master :
 
 ```groovy
 pipeline {
     agent any
     stages {
         stage ('Deploy stage') {
-                when {
+            when {
                 branch 'master'
-                }
-    		steps {
-                    echo 'Deploy master to stage'
-                    ...
-                    }
-             }
+            }
+            steps {
+                echo 'Deploy master to stage'
+                // Add steps for deployment
+            }
+        }
     }
 }
 ```
@@ -1319,5 +1724,6 @@ Les erreurs de syntaxe des pipelines **déclaratifs** sont signalées dès le d�
 Comme déjà mentionné, les pipelines peuvent être écrits de manière **déclarative** ou **scriptée**. En effet, la méthode déclarative est construite au-dessus de la méthode scriptée, ce qui facilite son extension comme expliqué, en ajoutant des étapes de script.
 
 Les pipelines Jenkins sont largement utilisés dans les **environnements CI/CD**. L'utilisation de pipelines déclaratifs ou scriptés présente plusieurs avantages. la méthode déclarative offre une syntaxe beaucoup plus conviviale sans aucune connaissance Groovy requise.
+
 
 #%%
