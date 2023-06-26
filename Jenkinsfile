@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-	dockerhub=credentials('shinbidocker')
+	dockerhub=credentials('docker')
     }
     stages {
         stage('Checkout') {
@@ -23,18 +23,23 @@ pipeline {
         }
 	stage('Deploying'){
             steps{
-                bat 'docker build -t shinbi/mlops_tp5:latest .'
-                bat 'docker run -d -p 8000:8000 shinbi/mlops_tp5:latest'
+                bat 'docker build -t atoutp/mlops_tp5:latest .'
+                bat 'docker run -d -p 8000:8000 atoutp/mlops_tp5:latest'
             }
         }
+	stage('User Acceptance') {
+	    steps{
+		input {
+                	message "Proceed to push to main"
+                	ok "Yes"
+            	}    
+	    }
+	}
 	stage('Pushing and Merging'){
 		parallel {
 			stage('Pushing Image') {
 			    steps {
-				bat 'docker logout'
-				bat "echo $dockerhub_PWD | docker login -u $dockerhub_USR --password-stdin"
-				bat 'docker push shinbi/mlops_tp5:latest'
-				bat 'docker logout'
+				bat 'docker push atoutp/mlops_tp5:latest'
 			    }
 			}
 			stage('Merging') {
@@ -46,5 +51,10 @@ pipeline {
 			}
 		}
 	}
+    }
+    post {
+        always {
+            bat 'docker logout'
+        }
     }
 }
