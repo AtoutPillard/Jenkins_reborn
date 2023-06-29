@@ -639,16 +639,149 @@ Ceci sera la liste de nos informations secretes :
 
 #%%
 
-# III Jobs et Build 
+# III Jobs et Pipeline
 
-## A - Projet freestyle
+Nous avions explicité l'intérêt d'utiliser Jenkins par la possibilité d'automatiser certaines étapes dans la mise en production d'un logiciel. L'ensemble des étapes de cette mise en production constitue le pipeline de notre projet. Le pipeline dépend de vos projets, les étapes peuvent être différentes.
 
+Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub dans lequel nous avons ajouté le webhook lors du chapitre précédent. Nous allons ajouter des fichies pour simuler le déploiement d'une API comme vous pourriez le faire en entreprise.
 
-Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique Hello World.
+> Dans un fichier nommé `app.py`, nous allons le code ci-dessous qui va créer une API Flask avec plusieurs routes.
+```python
+"""
+simple python flask application
+"""
+
+##########################################################################
+## Imports
+##########################################################################
+
+import os
+
+from flask import Flask
+from flask import request
+from flask import render_template
+from flask import url_for
+from flask.json import jsonify
+
+##########################################################################
+## Application Setup
+##########################################################################
+
+app = Flask(__name__)
+
+##########################################################################
+## Routes
+##########################################################################
+
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/api/hello")
+def hello():
+    """
+    Return a hello message
+    """
+    return jsonify({"hello": "world"})
+
+@app.route("/api/hello/<name>")
+def hello_name(name):
+    """
+    Return a hello message with name
+    """
+    return jsonify({"hello": name})
+
+@app.route("/api/whoami")
+def whoami():
+    """
+    Return a JSON object with the name, ip, and user agent
+    """
+    return jsonify(
+        name=request.remote_addr,
+        ip=request.remote_addr,
+        useragent=request.user_agent.string
+    )
+
+@app.route("/api/whoami/<name>")
+def whoami_name(name):
+    """
+    Return a JSON object with the name, ip, and user agent
+    """
+    return jsonify(
+        name=name,
+        ip=request.remote_addr,
+        useragent=request.user_agent.string
+    )
+
+##########################################################################
+## Main
+##########################################################################
+
+if __name__ == '__main__':
+    app.run()
+```
+> Créez un fichier `test_main.py` qui va contenir les tests unitaires de notre API:
+```python
+import unittest
+from app import app
+
+class FlaskTestCase(unittest.TestCase):
+
+    def setUp(self):
+        self.app = app.test_client()
+
+    def test_home(self):
+        response = self.app.get('/')
+        self.assertEqual(response.status_code, 200)
+
+    def test_hello(self):
+        response = self.app.get('/api/hello')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'hello': 'world'})
+
+    def test_hello_name(self):
+        response = self.app.get('/api/hello/ben')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json, {'hello': 'ben'})
+
+if __name__ == '__main__':
+    unittest.main()
+```
+
+> Dans un fichier nommé `requirements.txt`, ajoutez les librairies nécessaire pour le fonctionnement de l'API ainsi que des tests unitaires: 
+```
+flask
+unittest
+```
+
+> Enfin nous allons contenairiser notre API avec Docker avec le `Dockerfile` ci-dessous:
+```
+# Dockerfile to build a flask app
+
+FROM python:3.8-slim-buster
+
+WORKDIR /usr/ 
+
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt
+
+COPY . .
+
+CMD [ "python", "-m" , "flask", "run"]
+```
+
+Nous allons retrouver dans ce dépôt notre API, un fichier de tests unitaires, un fichier listant les librairies à installer et un fichier DockerFile. Nous allons pouvoir faire un pipeline composée de plusieurs phases qui va contruire l'API, la tester et la déployer.
+
+## A - Les différents types de Jobs
+
+Nous allons nous lancer enfin dans la pratique de Jenkins en construisant notre premier projet!
 
 > Cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. 
 
-Nous arriverons alors sur la page des jobs Jenkins qui sont un ensemble donné de tâches qui s'exécutent **séquentiellement** tel que défini par l'utilisateur. Toute automatisation est implémentée dans Jenkins est un `Job` Jenkins. Ces travaux constituent une partie importante du processus de construction de Jenkins. Nous pouvons créer et construire des Jobs Jenkins pour tester et déployer notre application ou notre projet.
+Nous arriverons alors sur la page des jobs Jenkins qui sont un ensemble donné de tâches qui s'exécutent **séquentiellement** tel que défini par l'utilisateur. Toute automatisation est implémentée dans Jenkins est un `Job` Jenkins. Ces travaux constituent une partie importante du processus de construction de Jenkins. Nous pouvons créer et construire des Jobs  pour tester et déployer notre application ou notre projet.
+
+Lorsque nous travaillons avec Jenkins, les termes Jenkins Job et Jenkins Project sont synonymes. Avec un Job Jenkins, nous pouvons cloner le code source à partir d'un gestionnaire de version comme Git, compiler le code et exécuter des tests unitaires en fonction de nos besoins.
+
 Il existe différents types de Job Jenkins disponibles à des fins différentes. En fonction de la complexité et de la nature de notre projet, nous pouvons choisir celui qui correspond le mieux à nos besoins.
 
 Examinons brièvement les différents types de job à Jenkins :
@@ -698,64 +831,9 @@ Examinons brièvement les différents types de job à Jenkins :
 </tbody>
 </table>
 
-> Donnez un nom à votre projet, puis sélectionnez l'option `Construire un projet free-style` (_Freestyle project_) et appuyez sur le bouton **OK**.
-
-Vous devriez obtenir la page suivante :
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/desc_projet.png" style="width:75%">
-</p>
-
-Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le _Source Code Management_ , automatiser les _build_ du projet et réaliser des actions selon si le build a été un succès ou un échec.
-
-<div class="alert alert-info"><i class="icon circle info"></i>
-Si vous observez bien, vous apercevez un point d'interrogation à la droite de chaque proposition, qui comme attendu fournit une explication, n'hésitez pas à les consulter.
-</div>
-
-Ici, nous voulons simplement afficher un _Hello World_ , pour cela nous allons sur la section _Build_, qui va retranscrire les actions que nous voulons faire. Nous choisissons l'action depuis le bouton _Add build step_. Nous avons plusieurs options, dans notre cas, nous prenons _Execute shell_.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/build_2.png" style="width:75%">
-</p>
-
-Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée. Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton _Add build step_.
-
-<div class="alert alert-info">
-<i class="fa fa-info-circle"></i>
-Des variables d'environnement sont aussi disponibles depuis la route /env-vars.html/, vous pouvez les utiliser pour vos scripts et les afficher via un <code>echo</code>.
-</div>
-
-Une fois cela fait, cliquez sur le bouton Save et cela vous renvoie à la page principale du projet.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/page_garde.png" style="width:65%">
-</p>
-
-Sur le Dashboard à votre gauche, cliquez sur le bouton "Lancer un Build" (_Build Now_), cela va exécuter les actions que vous avez définies dans le _Add Build Step_. En dessous du Dashboard se trouve une section _Build History_ qui est un historique des Build. Une fois, le job lancé, vous devrez pouvoir observer un #1 associé avec un tick vert entouré, si le build avait échoué, nous aurions eu une croix rouge entouré. En cliquant sur le #1, cela vous renvoie aux informations relatives au build.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/after_build1.png" style="width:65%">
-</p>
-
-Sur cette nouvelle page, le dashboard est différent et il y apparaît un onglet _Console Output_, où se trouve les sorties des actions demandées, nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/resultat.png" style="width:65%">
-</p>
-
-Bravo, nous avons réalisé notre premier projet sur Jenkins!
-
-<div class="alert alert-info"><i class="icon circle info"></i>
-Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
-</div>
-
-
-
 ## **B - Pipeline Jenkins**
 
 <br>
-
-Précédemment, nous avons vu la fonctionnalité Freestyle Project nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à *None* bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le **Pipeline**. Dans ce module, nous utiliserons le logiciel de versioning Git.
 
 ## **A - Présentation**
 
@@ -872,15 +950,10 @@ Nous pouvons également valider la syntaxe du code de pipeline déclaratif avant
 
 Nous allons, dès à présent, créer un pipeline déclaratif qui va être composé de trois phases: *Building*, *Testing* et *Deploying*. Nous devons tout d'abord réaliser un nouveau projet.
 
-> Dirigeons nous sur `New Item` qui est la première option du dashboard, comme lorsque nous avions fait le Freestyle Project en donnant le nom `datascientest-ci-cd` à notre projet.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/new_item.png" style="width:60%">
-</p>
-
 Nous devons donner un nom à notre projet et ensuite choisir un type de projet.
 
-Nous appellerons `datascientest-ci-cd` et nous choisirons le type `pipelines` car nous partirons de notre fichier `Jenkinsfile` afin de décrire les tâches à automatiser :
+> Donnez le nom `datascientest-ci-cd` à votre projet et sélectionner le type de projet `Pipeline` car nous partirons de notre fichier Jenkinsfile afin de décrire les tâches à automatiser :
+
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/pipeline_projet.png" style="width:60%">
@@ -956,7 +1029,7 @@ Une fois que nous avons ajouté la description, passons à la section suivante.
 
 ### **C - Projet Github**
 
-Nous devons cocher la case `GitHub project` et remplir le formulaire qui apparaîtra en utilisant l'url de notre dépôt git:
+> Nous devons cocher la case `GitHub project` et remplir le formulaire qui apparaîtra en utilisant l'url de notre dépôt git:
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_project.png" style="width:60%">
@@ -1020,38 +1093,36 @@ Sur la partie `Build Triggers` du Job Jenkins, plusieurs options sont disponible
 </tbody>
 </table>
 
-Nous devons cocher la case `GitHub hook trigger for GITScm polling` pour que GitHub puisse envoyer des Webhooks qui déclencherons la construction de notre Job.
+> Nous devons cocher la case `GitHub hook trigger for GITScm polling` pour que GitHub puisse envoyer des Webhooks qui déclencherons la construction de notre Job.
 
 Ensuite, nous devons spécifier le chemin du fichier **Jenkinsfile** depuis notre dépôt. Jenkins essaiera par défaut de le récupérer à la racine de ce dernier. Nous devons donc lui renseigner l'URL `SSH`.
 
 Jenkins essaiera immédiatement de vérifier s'il peut récupérer le fichier depuis notre dépôt avant de sauvegarder le projet. 
 
-Pour le cours, nous créerons le fichier `Jenkinsfile` au sein de notre dépôt Github
-
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/webhook_pipeline.png" style="width:60%">
 </p>
 
-Nous devons ensuite spécifier le dépôt dans lequel se trouve le fichier `Jenkinsfile` ainsi que le chemin ou le trouver dans le dépôt. Jenkins essaiera par défaut de récupérer le Jenkinsfile à la racine de notre dépôt Github. Nous devons récupérer l'URL en SSH de notre dépôt et le passer à Jenkins.
-
-Jenkins essaiera immédiatement de vérifier s'il peut bien récupérer le fichier dans le dit dépôt avant de sauvegarder le projet . Pour le cours, nous créerons le fichier `Jenkinsfile` depuis au sein de notre dépôt Github.
+> Jenkins essaiera immédiatement de vérifier s'il peut bien récupérer le fichier dans le dit dépôt avant de sauvegarder le projet . Pour le cours, nous créerons le fichier `Jenkinsfile` depuis au sein de notre dépôt Github.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkinsfile_from_scm.png" style="width:60%">
 </p>
 
-Nous choisissons Git comme `SCM` et définissons le chemin de notre dépôt Github . Nous définissons également sur `None` le champ Credentials car notre dépôt est public et Jenkins pourra récupéré le fichier `Jenkinsfile` sans avoir besoin de s'authentifier.
+> Nous choisissons Git comme `SCM` et définissons le chemin de notre dépôt Github . Nous définissons également sur `None` le champ Credentials car notre dépôt est public et Jenkins pourra récupéré le fichier `Jenkinsfile` sans avoir besoin de s'authentifier.
 
-Nous laisserons le reste des champs par défaut et nous définirons dans le champ `Script Path` la valeur Jenkinsfile puisse que le fichier `Jenkinsfile` se trouvera à la racine de notre projet. S'il avait été dans un répertoire appelé `pipeline`, nous aurions rempli à la place `pipeline/Jenkinsfile`.
+> Nous laisserons le reste des champs par défaut et nous définirons dans le champ `Script Path` la valeur Jenkinsfile puisse que le fichier `Jenkinsfile` se trouvera à la racine de notre projet. S'il avait été dans un répertoire appelé `pipeline`, nous aurions rempli à la place `pipeline/Jenkinsfile`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkinsfile_path.png" style="width:60%">
 </p>
 
-Une fois terminé, nous pouvons sauvegarder notre travail en cliquant sur le bouton `Save`.
+> Une fois terminé, nous pouvons sauvegarder notre travail en cliquant sur le bouton `Save`.
 
 
 ## **D - Syntaxe déclarative du pipeline Jenkins**
+
+Nous allons contruire ensemble un pipeline Jenkins qui va automatiser les étapes des notre API, de sa construction à son déploiement. Les instructions seront à faire dans votre fichier `Jenkinsfile`.
 
 ### d.1 - Stages et Stage
 
@@ -1097,7 +1168,7 @@ pipeline {
 }
 ```
 
-> Créez votre premier pipeline avec trois stages nommés `Building`, `Testing` et `Deploying` 
+> Créez votre premier pipeline avec trois stages nommés `Building`, `Testing` et `Deploying`.  
 
 %%SOLUTION%%
 ```groovy
@@ -1162,8 +1233,8 @@ steps {
 <br>
 
 > En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
-> Dans la phase Building, vous devez installer les librairies contenues dans le fichier requirements.txt
-> Dans la phase Testing, vous devez lancer les tests unitaires
+> - Dans la phase `Building`, vous devez installer les librairies contenues dans le fichier `requirements.txt`
+> - Dans la phase `Testing`, vous devez lancer les tests unitaires
 
 %%SOLUTION%%
 
@@ -1193,7 +1264,7 @@ pipeline {
 </br>
 
 
-### d.7 - script
+### d.3 - script
 
 L' étape `script` prend un bloc de pipeline scripté et l'exécute dans le pipeline déclaratif. Cette étape est utilisée pour ajouter des phrases de pipeline scripté dans une phrase déclarative, offrant ainsi encore plus de fonctionnalités. Cette étape doit être incluse au niveau `stage`.
 
@@ -1220,7 +1291,9 @@ pipeline {
 }
 ```
 
-> Dans la phase Deploying, faites une section script dans lequel vous allez créer une image Docker à partir du Dockerfile et lancer le conteneur Docker
+> Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker avec comme nom `dst_api` à partir du Dockerfile et lancer le conteneur Docker sur le port `8000`. Vous pouvez aussi mettre une version pour votre image. Pour la suite de notre pipeline, nous mettrons `latest`.
+> > Faites attention à ce que le port soit libre
+> > Ajoutez votre pseudonyme dockerhub au nom de votre image Docker afin de pouvoir le push sur dockerhub plus tard (nom_dockerhub/dst-api:latest)
 
 %%SOLUTION%%
 
@@ -1241,8 +1314,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t shinbi/mlops_tp5:latest .
-		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
 		'''
 		}
             }
@@ -1254,7 +1327,7 @@ pipeline {
 
 <br>
 
-### d.1 - Agent
+### d.4 - Agent
 
 Jenkins offre la possibilité d'effectuer des builds distribués en les déléguant à des nœuds "agents". Cela vous permet d'exécuter plusieurs projets avec une seule instance du serveur Jenkins, tandis que la **charge de travail** est distribuée à ses **agents**. Les détails sur la configuration d'un mode maître/agent sortent du cadre de ce cours.
 
@@ -1328,8 +1401,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t shinbi/mlops_tp5:latest .
-		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
 		'''
 		}
             }
@@ -1342,7 +1415,7 @@ pipeline {
 <br>
 
 
-### d.2 - Environment
+### d.5 - Environment
 
 La directive `environment` spécifie une séquence de paires clé-valeur qui seront définies comme des variables d'environnement pour toutes les étapes, ou des étapes spécifiques à une étape, selon l'emplacement de la directive `environment` dans le Pipeline. Cette directive peut être définie à la fois au niveau de l'étape ou du pipeline, ce qui déterminera la portée de ses définitions.
 
@@ -1406,7 +1479,7 @@ pipeline {
 }
 ```
 
-> Dans votre pipeline, créez une variable nommée `dockerhub` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction `credentials()` qui prend en entrée, l'id du credentials jenkins
+> Dans votre pipeline, créez une variable nommée `dockerhub` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction `credentials()` qui prend en entrée, l'id du credentials jenkins.
 
 %%SOLUTION%%
 
@@ -1431,8 +1504,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t shinbi/mlops_tp5:latest .
-		docker run -d -p 8000:8000 shinbi/mlops_tp5:latest
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
 		'''
 		}
             }
@@ -1445,7 +1518,7 @@ pipeline {
 <br>
 
 
-### d.3 - triggers
+### d.6 - triggers
 
 La directive `triggers` définit les manières automatisées de relancer le Pipeline. Pour les pipelines qui sont intégrés à une source telle que **GitHub** ou **Bitbucket**, cette directive peut ne pas être nécessaire car l'intégration basée sur les webhooks sera probablement déjà présente.
 
@@ -1501,6 +1574,203 @@ pipeline {
 ```
 
 <br>
+
+
+### d.8 - Input
+
+La directive `input` est définie au niveau du `stage` et fournit la fonctionnalité pour demander une entrée. L'étape sera mise en pause jusqu'à ce qu'un utilisateur la confirme manuellement.
+
+Les options de configuration suivantes peuvent être utilisées pour cette directive :
+
+- `message` : il s'agit d'une option obligatoire dans laquelle le message à afficher pour l'utilisateur est spécifié.
+
+- `id` : identifiant facultatif de l'entrée. Par défaut, le nom "étape" est utilisé.
+
+- `ok` : texte facultatif pour le bouton OK.
+
+- `submitter`: liste facultative d'utilisateurs ou de noms de groupes externes autorisés à soumettre l'entrée. Par défaut, n'importe quel utilisateur est autorisé.
+
+- `submitterParameter` : nom facultatif d'une variable d'environnement à définir avec le nom de l'émetteur, s'il est présent.
+
+- `parameters `: liste facultative de paramètres à fournir par le demandeur.
+
+```groovy
+pipeline {
+	agent any
+	stages {
+		stage ('build') {
+            input{
+                message "Press Ok to continue Datascientest"
+                submitter "user1,user2"
+                parameters {
+                    string(name:'username', defaultValue: 'user', description: 'Username of the user  pressing Ok')
+                }
+	}
+	steps {
+		echo "User: ${username} said Ok."
+	}
+		}
+	}
+}
+```
+
+> Ajoutez dans votre jenkinsfile, un nouvel stage nommé `User acceptance` qui va demander à l'utilisateur s'il veut déployer le code sur la branche `main`
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment {
+    	dockerhub = credentials('docker_jenkins')
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		'''
+		}
+            }
+        }
+	stage('User Acceptance') {
+	    steps{
+		input {
+                	message "Proceed to push to main"
+                	ok "Yes"
+            	}    
+	    }
+	}
+    }
+}
+```
+%%SOLUTION%%
+
+<br>
+
+
+### d.9 - Parrallel
+
+Les étapes du pipeline déclaratif Jenkins peuvent avoir d'autres étapes imbriquées à l'intérieur qui seront exécutées en parallèle. Cela se fait en ajoutant la directive `parallel` à votre script:
+
+```groovy
+pipeline {
+    agent none
+    stages {
+        stage('Run Tests') {
+            parallel {
+                stage('Test On Windows') {
+                    agent { label "windows" }
+                    steps {
+                        bat "run-tests.bat"
+                      }
+                  }
+                  stage('Test On Linux') {
+                        agent { label "linux" }
+                        steps {
+                            sh "run-tests.sh"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+Nous obtiendrons ceci en terme de résultats:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/parralel.webp" style="width:30%">
+</p>
+
+Les deux scripts exécuteront les tests sur différents nœuds car ils exécutent des tests de plate-forme spécifiques. Le parallélisme peut également être utilisé pour exécuter simultanément des étapes sur le même nœud en utilisant le multithreading, si votre serveur Jenkins dispose de suffisamment de CPU.
+
+Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles :
+
+- Une directive `stage` peut avoir soit une directive parallèle, soit une directive d'étapes, mais pas les deux.
+
+- Une directive `stage` à l'intérieur d'une directive `parallel` ne peut pas imbriquer une autre directive `parallel`, seules les directives `stage` sont autorisées.
+
+- Les directives d'étape qui ont une directive parallèle à l'intérieur ne peuvent pas avoir de directives "agent" ou "outils" définies.
+
+
+> Créez un nouveau stage `Pushing and Merging` regroupant les deux stages suivantes qui seront exécutés en parallèle:
+> > Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
+> > Un stage `Merging` dan lequel on va devoir merge la branche developing de votre dpot GitHub à notre branche main. Faites attention à toutes les étapes pour le merging des deux branches.
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment {
+    	dockerhub = credentials('docker_jenkins')
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		'''
+		}
+            }
+        }
+	stage('User Acceptance') {
+	    steps{
+		input {
+                	message "Proceed to push to main"
+                	ok "Yes"
+            	}    
+	    }
+	}
+	stage('Pushing and Merging'){
+		parallel {
+			stage('Pushing Image') {
+			    steps {
+				sh 'docker push dst_dockerhub/dst_api:latest'
+			    }
+			}
+			stage('Merging') {
+			    steps {
+				script {
+				sh '''
+				git checkout main
+				git merge origin/staging
+				git push -f origin main
+				'''
+				}
+			    }
+			}
+		}
+	}
+    }
+}
+```
+%%SOLUTION%%
 
 ### d.4 - post
 
@@ -1561,92 +1831,76 @@ pipeline {
 }
 ```
 
-<br>
+> Créez une section post qui va permettre de se déconnecter de dockerhub à la fin de chaque workflow. Nous allons donc utiliser la condition `always`.
 
-
-### d.8 - Input
-
-La directive `input` est définie au niveau du `stage` et fournit la fonctionnalité pour demander une entrée. L'étape sera mise en pause jusqu'à ce qu'un utilisateur la confirme manuellement.
-
-Les options de configuration suivantes peuvent être utilisées pour cette directive :
-
-- `message` : il s'agit d'une option obligatoire dans laquelle le message à afficher pour l'utilisateur est spécifié.
-
-- `id` : identifiant facultatif de l'entrée. Par défaut, le nom "étape" est utilisé.
-
-- `ok` : texte facultatif pour le bouton OK.
-
-- `submitter`: liste facultative d'utilisateurs ou de noms de groupes externes autorisés à soumettre l'entrée. Par défaut, n'importe quel utilisateur est autorisé.
-
-- `submitterParameter` : nom facultatif d'une variable d'environnement à définir avec le nom de l'émetteur, s'il est présent.
-
-- `parameters `: liste facultative de paramètres à fournir par le demandeur.
+%%SOLUTION%%
 
 ```groovy
 pipeline {
-	agent any
-	stages {
-		stage ('build') {
-            input{
-                message "Press Ok to continue Datascientest"
-                submitter "user1,user2"
-                parameters {
-                    string(name:'username', defaultValue: 'user', description: 'Username of the user  pressing Ok')
-                }
+    agent any
+    environment {
+    	dockerhub = credentials('docker_jenkins')
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		'''
+		}
+            }
+        }
+	stage('User Acceptance') {
+	    steps{
+		input {
+                	message "Proceed to push to main"
+                	ok "Yes"
+            	}    
+	    }
 	}
-	steps {
-		echo "User: ${username} said Ok."
-	}
+	stage('Pushing and Merging'){
+		parallel {
+			stage('Pushing Image') {
+			    steps {
+				sh 'docker push dst_dockerhub/dst_api:latest'
+			    }
+			}
+			stage('Merging') {
+			    steps {
+				script {
+				sh '''
+				git checkout main
+				git merge origin/staging
+				git push -f origin main
+				'''
+				}
+			    }
+			}
 		}
 	}
-}
-```
-
-<br>
-
-### d.9 - Parrallel
-
-Les étapes du pipeline déclaratif Jenkins peuvent avoir d'autres étapes imbriquées à l'intérieur qui seront exécutées en parallèle. Cela se fait en ajoutant la directive `parallel` à votre script:
-
-```groovy
-pipeline {
-    agent none
-    stages {
-        stage('Run Tests') {
-            parallel {
-                stage('Test On Windows') {
-                    agent { label "windows" }
-                    steps {
-                        bat "run-tests.bat"
-                      }
-                  }
-                  stage('Test On Linux') {
-                        agent { label "linux" }
-                        steps {
-                            sh "run-tests.sh"
-                    }
-                }
-            }
+    }
+    post {
+        always {
+            bat 'docker logout'
         }
     }
 }
 ```
+%%SOLUTION%%
 
-Nous obtiendrons ceci en terme de résultats:
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/parralel.webp" style="width:30%">
-</p>
-
-Les deux scripts exécuteront les tests sur différents nœuds car ils exécutent des tests de plate-forme spécifiques. Le parallélisme peut également être utilisé pour exécuter simultanément des étapes sur le même nœud en utilisant le multithreading, si votre serveur Jenkins dispose de suffisamment de CPU.
-
-Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles :
-
-- Une directive `stage` peut avoir soit une directive parallèle, soit une directive d'étapes, mais pas les deux.
-
-- Une directive `stage` à l'intérieur d'une directive `parallel` ne peut pas imbriquer une autre directive `parallel`, seules les directives `stage` sont autorisées.
-
-- Les directives d'étape qui ont une directive parallèle à l'intérieur ne peuvent pas avoir de directives "agent" ou "outils" définies.
+<br>
 
 ### d.10 - Parameters
 
