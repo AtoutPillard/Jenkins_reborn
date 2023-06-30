@@ -1576,7 +1576,7 @@ pipeline {
 <br>
 
 
-### d.8 - Input
+### d.7 - Input
 
 La directive `input` est définie au niveau du `stage` et fournit la fonctionnalité pour demander une entrée. L'étape sera mise en pause jusqu'à ce qu'un utilisateur la confirme manuellement.
 
@@ -1661,7 +1661,7 @@ pipeline {
 <br>
 
 
-### d.9 - Parrallel
+### d.8 - Parrallel
 
 Les étapes du pipeline déclaratif Jenkins peuvent avoir d'autres étapes imbriquées à l'intérieur qui seront exécutées en parallèle. Cela se fait en ajoutant la directive `parallel` à votre script:
 
@@ -1772,7 +1772,7 @@ pipeline {
 ```
 %%SOLUTION%%
 
-### d.4 - post
+### d.9 - post
 
 La section `post` définit les actions qui seront exécutées à la fin de l'exécution du pipeline. Un certain nombre de blocs de conditions de publication supplémentaires sont pris en charge dans la `post` section : `always`, `changed`, `failure`, `success` et `unstable`.
 
@@ -1972,6 +1972,78 @@ pipeline {
     }
 }
 ```
+
+> Ajoutez au stage `Merging`, la condition de ne merge que la branche `development` avec la branche `main`
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment {
+    	dockerhub = credentials('docker_jenkins')
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+	    	script {
+		sh '''
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		'''
+		}
+            }
+        }
+	stage('User Acceptance') {
+	    steps{
+		input {
+                	message "Proceed to push to main"
+                	ok "Yes"
+            	}    
+	    }
+	}
+	stage('Pushing and Merging'){
+		parallel {
+			stage('Pushing Image') {
+			    steps {
+				sh 'docker push dst_dockerhub/dst_api:latest'
+			    }
+			}
+			stage('Merging') {
+			    when {
+				branch 'development'
+			    }
+			    steps {
+				script {
+				sh '''
+				git checkout main
+				git merge origin/staging
+				git push -f origin main
+				'''
+				}
+			    }
+			}
+		}
+	}
+    }
+    post {
+        always {
+            bat 'docker logout'
+        }
+    }
+}
+```
+%%SOLUTION%%
 
 Les erreurs de syntaxe des pipelines **déclaratifs** sont signalées dès le début de l'exécution. C'est une fonctionnalité intéressante car vous ne perdrez pas de temps jusqu'à ce qu'une étape ne réalise pas qu'il y a une faute de frappe ou une faute d'orthographe.
 
