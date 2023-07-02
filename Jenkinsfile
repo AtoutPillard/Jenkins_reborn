@@ -1,30 +1,27 @@
 pipeline {
     agent any
     environment {
-	dockerhub=credentials('docker')
+    	dockerhub = credentials('docker_jenkins')
     }
     stages {
-        stage('Checkout') {
+        stage('Building') {
             steps {
-		bat 'git branch -d staging'
-		bat 'git checkout -b staging'
-		bat 'git push -u origin staging'
+	    	sh 'pip install -r requirements.txt'
             }
         }
-        stage('Building'){
-            steps{
-                bat 'pip install -r requirements.txt'
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
             }
         }
-        stage('Testing'){
+	stage('Deploying') {
             steps{
-                bat 'python -m unittest'
-            }
-        }
-	stage('Deploying'){
-            steps{
-                bat 'docker build -t atoutp/mlops_tp5:latest .'
-                bat 'docker run -d -p 8000:8000 atoutp/mlops_tp5:latest'
+	    	script {
+		sh '''
+		docker build -t dst_dockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		'''
+		}
             }
         }
 	stage('User Acceptance') {
@@ -39,14 +36,21 @@ pipeline {
 		parallel {
 			stage('Pushing Image') {
 			    steps {
-				bat 'docker push atoutp/mlops_tp5:latest'
+				sh 'docker push dst_dockerhub/dst_api:latest'
 			    }
 			}
 			stage('Merging') {
+			    when {
+				branch 'development'
+			    }
 			    steps {
-				bat 'git checkout main'
-				bat 'git merge origin/staging'
-				bat 'git push -f origin main'
+				script {
+				sh '''
+				git checkout main
+				git merge origin/staging
+				git push -f origin main
+				'''
+				}
 			    }
 			}
 		}
