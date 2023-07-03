@@ -11,15 +11,15 @@ pipeline {
         }
         stage('Testing') {
             steps {
-	    	sh 'python -m unittest'
+	    	sh 'python3 -m unittest'
             }
         }
 	stage('Deploying') {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t dstDockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dstDockerhub/dst_api:latest
 		'''
 		}
             }
@@ -37,7 +37,7 @@ pipeline {
 		parallel {
 			stage('Pushing Image') {
 			    steps {
-				sh 'docker push dst_dockerhub/dst_api:latest'
+				sh 'docker push dstDockerhub/dst_api:latest'
 			    }
 			}
 			stage('Merging') {
