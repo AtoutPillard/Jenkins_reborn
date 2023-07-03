@@ -1,12 +1,15 @@
 pipeline {
-    agent {
-        docker {'python:3.8-alpine3.16'}
-    }
+    agent any
     environment {
     	dockerhub = credentials('docker_jenkins')
     }
     stages {
         stage('Building') {
+	    agent {
+                docker {
+                    image 'python:3.8-alpine3.16'
+                }
+            }
             steps {
 	    	sh 'pip install -r requirements.txt'
             }
