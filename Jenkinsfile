@@ -28,7 +28,10 @@ pipeline {
 		input {
                 	message "Proceed to push to main"
                 	ok "Yes"
-            	}    
+            	}
+		steps {
+			echo 'Lets go'
+		}
 	}
 	stage('Pushing and Merging'){
 		parallel {
