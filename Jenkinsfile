@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        docker {'python:3.8-alpine3.16'}
+    }
     environment {
     	dockerhub = credentials('docker_jenkins')
     }
