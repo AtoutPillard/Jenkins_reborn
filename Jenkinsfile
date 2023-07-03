@@ -18,8 +18,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dstDockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dstDockerhub/dst_api:latest
+		docker build -t dstdockerhub/dst_api:latest .
+		docker run -d -p 8000:8000 dstdockerhub/dst_api:latest
 		'''
 		}
             }
@@ -37,7 +37,7 @@ pipeline {
 		parallel {
 			stage('Pushing Image') {
 			    steps {
-				sh 'docker push dstDockerhub/dst_api:latest'
+				sh 'docker push dstdockerhub/dst_api:latest'
 			    }
 			}
 			stage('Merging') {
