@@ -5,15 +5,8 @@ pipeline {
     }
     stages {
         stage('Building') {
-		agent {
-                docker {
-                    image 'python:3.8-alpine3.16'
-                }
-            }
             steps {
-		withEnv(["HOME=${env.WORKSPACE}"]) {
 	    	sh 'pip install -r requirements.txt'
-		}
             }
         }
         stage('Testing') {
