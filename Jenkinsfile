@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-    	dockerhub = credentials('docker_jenkins')
+    	DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
     }
     stages {
         stage('Building') {
@@ -37,7 +37,12 @@ pipeline {
 		parallel {
 			stage('Pushing Image') {
 			    steps {
-				sh 'docker push dstdockerhub/dst_api:latest'
+				script{
+				sh '''
+    				echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin
+				docker push dstdockerhub/dst_api:latest
+    				'''
+				}
 			    }
 			}
 			stage('Merging') {
