@@ -708,9 +708,6 @@ Un développeur formé aux pratiques DevOps peut télécharger l'image officiell
 
 Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docker.com/signup. Nous nous en servirons dans la suite de notre cours.
 
-#%%
-
-
 <br>
 
 
@@ -1536,9 +1533,9 @@ pipeline {
 }
 ```
 > À nouveau dans votre fichier `Jenkinsfile`, ajoutez dans une section `environment`, les une variable d'environnement suivantes
-> > `DOCKER_ID` qui va contenir votre identifiant/pseudonyme de votre compte Dockerhub
-> > `DOCKER_IMAGE` qui va contenir le nom de l'image docker que vous nommerez `datascientestapi`
-> > `DOCKER_TAG` qui va prendre comme valeur `v.${BUILD_ID}.0` permettant d'incrémenter la valeur de 1 à chaque nouvelle construction
+> - `DOCKER_ID` qui va contenir votre identifiant/pseudonyme de votre compte Dockerhub
+> - `DOCKER_IMAGE` qui va contenir le nom de l'image docker que vous nommerez `datascientestapi`
+> - `DOCKER_TAG` qui va prendre comme valeur `v.${BUILD_ID}.0` permettant d'incrémenter la valeur de 1 à chaque nouvelle construction
 
 %%SOLUTION%%
 
@@ -1734,9 +1731,8 @@ pipeline {
 }
 ```
 
-> Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile.
-> Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api
-> Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
+> - Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile. Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api
+> - Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
 
 %%SOLUTION%%
 
@@ -2322,6 +2318,8 @@ pipeline {
 }
 ```
 %%SOLUTION%%
+
+Nous avons maintenant fini notre pipeline!
 
 Les erreurs de syntaxe des pipelines **déclaratifs** sont signalées dès le début de l'exécution. C'est une fonctionnalité intéressante car vous ne perdrez pas de temps jusqu'à ce qu'une étape ne réalise pas qu'il y a une faute de frappe ou une faute d'orthographe.
 
