@@ -347,7 +347,7 @@ Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le **
 
 #%%
 
-# III - Premiers pas sur Jenkins
+# III - Mise en place des outils 
 
 <br>
 
@@ -640,12 +640,6 @@ Ceci sera la liste de nos informations secretes :
 
 ## **D - Installation de Docker**
 
-Nous devons ensuite ajouter l'utilisateur Jenkins au groupe Docker afin que Jenkins puisse piloter le `Docker` engine :
-
-```shell
-sudo usermod -aG docker jenkins
-```
-
 Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
 
 La raison du succès de Docker dans l'environnement DevOps est sa capacité à conteneuriser les applications. Cela réduit le temps de développement et de publication d'une solution pour une société de développement de logiciels.
@@ -656,8 +650,14 @@ Il permet à une application de s'exécuter sur n'importe quelle application, qu
 
 Nous pouvons également nous assurer qu'une fonctionnalité fonctionne dans l'environnement de production selon qu'elle est opérationnelle ou non dans l'environnement de développement.
 
+Docker est déjà installé sur les machines virtuelles fournies, afin que Jenkins puisse piloter le `Docker` engine, nous devons ajouter l'utilisateur Jenkins au groupe Docker avec la commande suivante:
+
+```shell
+sudo usermod -aG docker jenkins
+```
+
 <div class="alert alert-info"><i class="icon circle info"></i>
-Docker est déjà installé sur les machines virtuelles fournies, cette section sert pour ceux qui utilisent leurs ordinateurs personnelles. Vous pouvez le vérifier avec la commande <code>docker -v</code>
+La section suivante sert pour ceux qui utilisent leurs ordinateurs personnelles. Vous pouvez le vérifier avec la commande <code>docker -v</code>
 </div>
 
 Nous allons installer Docker à fin que Jenkins puisse être utilisé pour manipuler nos différentes images Docker. Nous installerons Docker en nous servant des commandes suivantes :
@@ -716,18 +716,134 @@ Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docke
 
 #%%
 
-# III Jobs et Pipeline
+# IV Jobs et Build
 
-Nous avions explicité l'intérêt d'utiliser Jenkins par la possibilité d'automatiser certaines étapes dans la mise en production d'un logiciel. L'ensemble des étapes de cette mise en production constitue le pipeline de notre projet. Le pipeline dépend de vos projets, les étapes peuvent être différentes.
 
-Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub dans lequel nous avons ajouté le webhook lors du chapitre précédent. Nous allons ajouter des fichies pour simuler le déploiement d'une API comme vous pourriez le faire en entreprise.
+## **A - Les différents types de Jobs**
+
+Nous allons nous lancer enfin dans la pratique de Jenkins en construisant notre premier projet!
+
+> Cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. 
+
+Nous arriverons alors sur la page des jobs Jenkins qui sont un ensemble donné de tâches qui s'exécutent **séquentiellement** tel que défini par l'utilisateur. Toute automatisation est implémentée dans Jenkins est un `Job` Jenkins. Ces travaux constituent une partie importante du processus de construction de Jenkins. Nous pouvons créer et construire des Jobs  pour tester et déployer notre application ou notre projet.
+
+Lorsque nous travaillons avec Jenkins, les termes Jenkins Job et Jenkins Project sont synonymes. Avec un Job Jenkins, nous pouvons cloner le code source à partir d'un gestionnaire de version comme Git, compiler le code et exécuter des tests unitaires en fonction de nos besoins.
+
+Il existe différents types de Job Jenkins disponibles à des fins différentes. En fonction de la complexité et de la nature de notre projet, nous pouvons choisir celui qui correspond le mieux à nos besoins.
+
+Examinons brièvement les différents types de job à Jenkins :
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
+.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
+  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
+  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
+.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
+</style>
+<table class="tg" style="undefined;table-layout: fixed; width: 1066px">
+<colgroup>
+<col style="width: 201.333333px">
+<col style="width: 864.333333px">
+</colgroup>
+<thead>
+  <tr>
+    <th class="tg-g7sd">Type de Jobs</th>
+    <th class="tg-g7sd">Description</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-isc8">Projet Freestyle</td>
+    <td class="tg-isc8">C'est la fonctionnalité centrale et la plus largement utilisée dans Jenkins. Il s'agit d'un travail de build Jenkins disponible offrant plusieurs opérations. Grâce à cette option, vous pouvez créer et exécuter des pipelines ou des scripts de manière transparente.</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Projet Maven</td>
+    <td class="tg-lboi">Si votre travail consiste à gérer et à créer des projets contenant des fichiers POM, vous préférez utiliser Maven Project pour créer des travaux dans Jenkins. En choisissant cette  option, Jenkins, par défaut, sélectionnera les fichiers POM, effectuera des configurations et exécutera des build. Un fichier POM (Project Object Model) est un élément central de la configuration d'un projet Maven, décrivant son contenu, ses dépendances et les actions à effectuer lors de sa construction. Un fichier POM est un fichier XML utilisé par Maven pour définir la configuration, les dépendances et la structure d'un projet logiciel Java.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Pipeline</td>
+    <td class="tg-isc8">Un travail basé sur un Jenkinsfile, offrant une approche plus puissante et flexible pour la création de pipelines et de flux de travail d'intégration continue et de déploiement continu (CI/CD).</td>
+  </tr>
+  <tr>
+    <td class="tg-lboi">Projet multi-configuration</td>
+    <td class="tg-lboi">Si vous travaillez sur un projet nécessitant plusieurs configurations, vous devez utiliser l'option "Projet multi-configuration". Cette option permet de créer plusieurs configurations pour tester dans plusieurs environnements.</td>
+  </tr>
+  <tr>
+    <td class="tg-isc8">Organisation GitHub</td>
+    <td class="tg-isc8">Cette option analyse le compte GitHub de l'utilisateur pour tous les référentiels d'une organisation spécifique, correspondant aux marqueurs définis pour automatiser les opérations associées.</td>
+  </tr>
+</tbody>
+</table>
+
+## **B - Projet Freestyle**
+
+Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique `Hello World`.
+
+Pour cela, cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. Donnez un nom à votre projet, puis sélectionnez l'option "Construire un projet free-style" (_Freestyle project_) et appuyez sur le bouton OK.
+
+Vous devriez obtenir la page suivante :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/desc_projet.png" style="width:75%">
+</p>
+
+Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le _Source Code Management_ , automatiser les _build_ du projet et réaliser des actions selon si le build a été un succès ou un échec.
+
+<div class="alert alert-info"><i class="icon circle info"></i>
+Si vous observez bien, vous apercevez un point d'interrogation à la droite de chaque proposition, qui comme attendu fournit une explication, n'hésitez pas à les consulter.
+</div>
+
+Ici, nous voulons simplement afficher un _Hello World_ , pour cela nous allons sur la section _Build_, qui va retranscrire les actions que nous voulons faire. Nous choisissons l'action depuis le bouton _Add build step_. Nous avons plusieurs options, dans notre cas, nous prenons _Execute shell_.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/build_2.png" style="width:75%">
+</p>
+
+Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée. Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton _Add build step_.
+
+<div class="alert alert-info">
+<i class="fa fa-info-circle"></i>
+Des variables d'environnement sont aussi disponibles depuis la route /env-vars.html/, vous pouvez les utiliser pour vos scripts et les afficher via un <code>echo</code>.
+</div>
+
+Une fois cela fait, cliquez sur le bouton Save et cela vous renvoie à la page principale du projet.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/page_garde.png" style="width:65%">
+</p>
+
+Sur le Dashboard à votre gauche, cliquez sur le bouton "Lancer un Build" (_Build Now_), cela va exécuter les actions que vous avez définies dans le _Add Build Step_. En dessous du Dashboard se trouve une section _Build History_ qui est un historique des Build. Une fois, le job lancé, vous devrez pouvoir observer un #1 associé avec un tick vert entouré, si le build avait échoué, nous aurions eu une croix rouge entouré. En cliquant sur le #1, cela vous renvoie aux informations relatives au build.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/after_build1.png" style="width:65%">
+</p>
+
+Sur cette nouvelle page, le dashboard est différent et il y apparaît un onglet _Console Output_, où se trouve les sorties des actions demandées, nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/resultat.png" style="width:65%">
+</p>
+
+<div class="alert alert-info"><i class="icon circle info"></i>
+Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
+</div>
+
+#%%
+
+## **V - Pipeline Jenkins**
+
+<br>
+Précédemment, nous avons vu la fonctionnalité Freestyle Project nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
+
+Nous avions explicité l'intérêt d'utiliser Jenkins par la possibilité d'automatiser certaines étapes dans la mise en production d'un logiciel. L'ensemble des étapes de cette mise en production constitue le pipeline de notre projet. Le pipeline dépend de vos projets les étapes peuvent être différentes.
+
+Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub dans lequel nous avons ajouté le webhook lors du chapitre précédent. Nous allons ajouter les fichiers suivant pour simuler le déploiement d'une API comme vous pourriez le faire en entreprise.
 
 > Dans un fichier nommé `app.py`, nous allons le code ci-dessous qui va créer une API Flask avec plusieurs routes.
 ```python
-"""
-simple python flask application
-"""
-
 ##########################################################################
 ## Imports
 ##########################################################################
@@ -847,70 +963,7 @@ COPY . .
 CMD [ "python", "-m" , "flask", "run"]
 ```
 
-Nous allons retrouver dans ce dépôt notre API, un fichier de tests unitaires, un fichier listant les librairies à installer et un fichier DockerFile. Nous allons pouvoir faire un pipeline composée de plusieurs phases qui va contruire l'API, la tester et la déployer.
-
-## A - Les différents types de Jobs
-
-Nous allons nous lancer enfin dans la pratique de Jenkins en construisant notre premier projet!
-
-> Cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. 
-
-Nous arriverons alors sur la page des jobs Jenkins qui sont un ensemble donné de tâches qui s'exécutent **séquentiellement** tel que défini par l'utilisateur. Toute automatisation est implémentée dans Jenkins est un `Job` Jenkins. Ces travaux constituent une partie importante du processus de construction de Jenkins. Nous pouvons créer et construire des Jobs  pour tester et déployer notre application ou notre projet.
-
-Lorsque nous travaillons avec Jenkins, les termes Jenkins Job et Jenkins Project sont synonymes. Avec un Job Jenkins, nous pouvons cloner le code source à partir d'un gestionnaire de version comme Git, compiler le code et exécuter des tests unitaires en fonction de nos besoins.
-
-Il existe différents types de Job Jenkins disponibles à des fins différentes. En fonction de la complexité et de la nature de notre projet, nous pouvons choisir celui qui correspond le mieux à nos besoins.
-
-Examinons brièvement les différents types de job à Jenkins :
-
-<style type="text/css">
-.tg  {border-collapse:collapse;border-color:#93a1a1;border-spacing:0;}
-.tg td{background-color:#fdf6e3;border-color:#93a1a1;border-style:solid;border-width:1px;color:#002b36;
-  font-family:Arial, sans-serif;font-size:14px;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg th{background-color:#657b83;border-color:#93a1a1;border-style:solid;border-width:1px;color:#fdf6e3;
-  font-family:Arial, sans-serif;font-size:14px;font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
-.tg .tg-lboi{border-color:inherit;text-align:left;vertical-align:middle}
-.tg .tg-isc8{background-color:#eee8d5;border-color:inherit;text-align:left;vertical-align:middle}
-.tg .tg-g7sd{border-color:inherit;font-weight:bold;text-align:left;vertical-align:middle}
-</style>
-<table class="tg" style="undefined;table-layout: fixed; width: 1066px">
-<colgroup>
-<col style="width: 201.333333px">
-<col style="width: 864.333333px">
-</colgroup>
-<thead>
-  <tr>
-    <th class="tg-g7sd">Type de Jobs</th>
-    <th class="tg-g7sd">Description</th>
-  </tr>
-</thead>
-<tbody>
-  <tr>
-    <td class="tg-isc8">Projet Freestyle</td>
-    <td class="tg-isc8">C'est la fonctionnalité centrale et la plus largement utilisée dans Jenkins. Il s'agit d'un travail de build Jenkins disponible offrant plusieurs opérations. Grâce à cette option, vous pouvez créer et exécuter des pipelines ou des scripts de manière transparente.</td>
-  </tr>
-  <tr>
-    <td class="tg-lboi">Projet Maven</td>
-    <td class="tg-lboi">Si votre travail consiste à gérer et à créer des projets contenant des fichiers POM, vous préférez utiliser Maven Project pour créer des travaux dans Jenkins. En choisissant cette  option, Jenkins, par défaut, sélectionnera les fichiers POM, effectuera des configurations et exécutera des build. Un fichier POM (Project Object Model) est un élément central de la configuration d'un projet Maven, décrivant son contenu, ses dépendances et les actions à effectuer lors de sa construction. Un fichier POM est un fichier XML utilisé par Maven pour définir la configuration, les dépendances et la structure d'un projet logiciel Java.</td>
-  </tr>
-  <tr>
-    <td class="tg-isc8">Pipeline</td>
-    <td class="tg-isc8">Un travail basé sur un Jenkinsfile, offrant une approche plus puissante et flexible pour la création de pipelines et de flux de travail d'intégration continue et de déploiement continu (CI/CD).</td>
-  </tr>
-  <tr>
-    <td class="tg-lboi">Projet multi-configuration</td>
-    <td class="tg-lboi">Si vous travaillez sur un projet nécessitant plusieurs configurations, vous devez utiliser l'option "Projet multi-configuration". Cette option permet de créer plusieurs configurations pour tester dans plusieurs environnements.</td>
-  </tr>
-  <tr>
-    <td class="tg-isc8">Organisation GitHub</td>
-    <td class="tg-isc8">Cette option analyse le compte GitHub de l'utilisateur pour tous les référentiels d'une organisation spécifique, correspondant aux marqueurs définis pour automatiser les opérations associées.</td>
-  </tr>
-</tbody>
-</table>
-
-## **B - Pipeline Jenkins**
-
-<br>
+Nous allons retrouver dans ce dépôt notre API, un fichier de tests unitaires, un fichier listant les librairies à installer et un fichier DockerFile. Maintenant que notre API est prête, nous allons pouvoir faire un pipeline composée de plusieurs phases qui va contruire l'API, la tester et la déployer.
 
 ## **A - Présentation**
 
@@ -1038,7 +1091,7 @@ Nous devons donner un nom à notre projet et ensuite choisir un type de projet.
 
 En cliquant sur le bouton `OK`, notre Job Jenkins sera prêt à être configuré. Nous pouvons créer autant de Jobs Jenkins selon nos besoins. La procédure de création de Job reste la même quelque soit le type de Job. Seuls les paramètres de configurations pourront varier en fonction du type de Jobs.
 
-### **B - Configuration de la gestion du code source**
+### **d.1 - Configuration de la gestion du code source**
 
 Nous commençons par remplir la section "Description" qui est un simple champ dans lequel nous remplissons la description sommaire de notre Job :
 
@@ -1104,7 +1157,7 @@ Outre le champ Description, d'autres options sont disponibles dans la section **
 
 Une fois que nous avons ajouté la description, passons à la section suivante.
 
-### **C - Projet Github**
+### **d.2 - Projet Github**
 
 > Nous devons cocher la case `GitHub project` et remplir le formulaire qui apparaîtra en utilisant l'url de notre dépôt git:
 
@@ -1114,7 +1167,7 @@ Une fois que nous avons ajouté la description, passons à la section suivante.
 
 Jenkins utilise Git comme outil de gestion de version de code source. Après avoir terminé la gestion du code source, nous allons ensuite vérifier l'option `Jenkins Build Triggers`.
 
-### **D - Déclencheur Jenkins**
+### **d.3 - Déclencheur Jenkins**
 
 Avant l'étape de construction de Jenkins, le déclenchement du travail est essentiel. La création de déclencheurs dans Jenkins nous permet d'exécuter une tâche à **chaque occurrence**. En d'autres termes, chaque fois qu'il y a un changement dans le code source, Jenkins déclenche automatiquement une **construction** avec la mise à jour la plus récente.
 
@@ -1197,214 +1250,13 @@ Jenkins essaiera immédiatement de vérifier s'il peut récupérer le fichier de
 > Une fois terminé, nous pouvons sauvegarder notre travail en cliquant sur le bouton `Save`.
 
 
-## **D - Syntaxe déclarative du pipeline Jenkins**
+## **E - Syntaxe déclarative du pipeline Jenkins**
 
-Nous allons contruire ensemble un pipeline Jenkins qui va automatiser les étapes des notre API, de sa construction à son déploiement. Les instructions seront à faire dans votre fichier `Jenkinsfile`.
+Nous allons contruire ensemble un pipeline Jenkins qui va automatiser les étapes des notre API, de sa construction à son déploiement. Les instructions seront à faire dans un fichier nommé `Jenkinsfile`.
 
-### d.1 - Stages et Stage
+Le premier bloc d'un pipeline commence toujours par `pipeline`. Si vous écrivez hors de ce bloc, cela générera une erreur. Ensuite, 2 éléments interviennent. Le premier est `agent`, qui va préciser où Jenkins va exécuter les différentes étapes du pipeline. 
 
-La section `stages` permet de générer différentes étapes sur le pipeline qui seront visualisées sous la forme de différents segments lors de l'exécution de la tâche.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-stages.jpg" style="width:60%">
-</p>
-
-Jenkins divise graphiquement l'exécution du pipeline en fonction des étapes définies et affiche leur durée et si elle a réussi ou non. La directive `stage` va dans la section `stages` et devrait contenir une directive [steps](https://docs.cloudbees.com/docs/admin-resources/latest/pipeline-syntax-reference-guide/declarative-pipeline#steps), une directive `agent` facultative ou d'autres directives spécifiques à une étape.
-
-En pratique, tout le travail réel effectué par un Pipeline sera enveloppé dans une ou plusieurs directives `stage`.
-
-```groovy
-pipeline {
-	agent any
-	stages {
-		stage ('build') {
-			...
-		}
-		stage ('test: integration-&-quality') {
-			...
-		}
-		stage ('test: functional') {
-			...
-		}
-		stage ('test: load-&-security') {
-			...
-		}
-		stage ('approval') {
-			...
-		}
-        	stage ('deploy:dev') {
-			...
-		}
-         stage ('deploy:staging') {
-			...
-		}
-		stage ('deploy:prod') {
-			...
-		}
-	}
-}
-```
-
-> Créez votre premier pipeline avec trois stages nommés `Building`, `Testing` et `Deploying`.  
-
-%%SOLUTION%%
-```groovy
-pipeline {
-    stages {
-        stage('Building') {
-
-        }
-        stage('Testing') {
-
-        }
-	stage('Deploying') {
-
-        }
-    }
-}
-```
-%%SOLUTION%%
-
-
-<br>
-
-### d.2 - Steps
-
-Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
-
-```groovy
-pipeline {
-    agent any
-    stages {
-        stage('Love') {
-            steps {
-                echo 'I love Datascientest'
-            }
-        }
-    }
-}
-```
-
-Pour Linux et MacOS, `sh` est pris en charge. Si nous voulons enchaîner plusieurs commandes, nous pouvons utiliser `sh'''` de la façon suivante :
-
-```groovy
-steps {
-    sh 'echo "I love Datascientest"'
-    sh '''
-    echo "A multiline step"'
-    cd /tests/results
-    ls -lrt
-    '''
-}
-```
-
-Pour Windows, bat ou powershell peut être utilisé de la façon suivante :
-
-```groovy
-steps {
-    bat "mvn clean test -Dsuite=SMOKE_TEST -Denvironment=QA"
-    powershell ".\funcional_tests.ps1"
-}
-```
-
-<br>
-
-> En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
-> - Dans la phase `Building`, vous devez installer les librairies contenues dans le fichier `requirements.txt`
-> - Dans la phase `Testing`, vous devez lancer les tests unitaires
-
-%%SOLUTION%%
-
-```groovy
-pipeline {
-    stages {
-        stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
-        }
-	stage('Deploying') {
-            steps{
-
-            }
-        }
-    }
-}
-```
-%%SOLUTION%%
-
-</br>
-
-
-### d.3 - script
-
-L' étape `script` prend un bloc de pipeline scripté et l'exécute dans le pipeline déclaratif. Cette étape est utilisée pour ajouter des phrases de pipeline scripté dans une phrase déclarative, offrant ainsi encore plus de fonctionnalités. Cette étape doit être incluse au niveau `stage`.
-
-Plusieurs fois, des blocs de scripts peuvent être utilisés sur différents projets. Ces blocs vous permettent d'étendre les fonctionnalités de Jenkins et peuvent être implémentés en tant que bibliothèques partagées. Plus d'informations à ce sujet peuvent être trouvées sur [les bibliothèques partagées Jenkins](https://jenkins.io/doc/book/pipeline/shared-libraries/).
-
-De plus, les bibliothèques partagées peuvent être importées et utilisées dans le bloc **"script"**, étendant ainsi les fonctionnalités du pipeline.
-
-```groovy
-pipeline {
-    agent any
-    stages {
-        stage('Test') {
-            steps {
-                echo 'Testing schools'
-                script {
-                    def schools = ['Datascientest', 'DevUniversity']
-                    for (int i = 0; i < schools.size(); ++i) {
-                        echo "Testing the ${schools[i]} school"
-                    }
-                }
-            }
-        }
-    }
-}
-```
-
-> Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker avec comme nom `dst_api` à partir du Dockerfile et lancer le conteneur Docker sur le port `8000`. Vous pouvez aussi mettre une version pour votre image. Pour la suite de notre pipeline, nous mettrons `latest`.
-> > Faites attention à ce que le port soit libre
-> > Ajoutez votre pseudonyme dockerhub au nom de votre image Docker afin de pouvoir le push sur dockerhub plus tard (nom_dockerhub/dst-api:latest)
-
-%%SOLUTION%%
-
-```groovy
-pipeline {
-    stages {
-        stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
-        }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
-		'''
-		}
-            }
-        }
-    }
-}
-```
-%%SOLUTION%%
-
-<br>
-
-### d.4 - Agent
+### e.1 - Agent
 
 Jenkins offre la possibilité d'effectuer des builds distribués en les déléguant à des nœuds "agents". Cela vous permet d'exécuter plusieurs projets avec une seule instance du serveur Jenkins, tandis que la **charge de travail** est distribuée à ses **agents**. Les détails sur la configuration d'un mode maître/agent sortent du cadre de ce cours.
 
@@ -1456,35 +1308,14 @@ agent {
 }
 ```
 
-> Ajoutez un agent de type `Any` à votre pipeline
+> Nous allons maintenant mettre en place notre pipeline pour automatiser tout le déploiement de notre projet. Créer dans votre fichier `Jenkinsfile` une section `pipeline` puis ajoutez un `agent` de type `any` à votre pipeline
 
 %%SOLUTION%%
 
 ```groovy
 pipeline {
     agent any
-    stages {
-        stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
-        }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
-		'''
-		}
-            }
-        }
-    }
+
 }
 ```
 %%SOLUTION%%
@@ -1492,7 +1323,7 @@ pipeline {
 <br>
 
 
-### d.5 - Environment
+### e.2 - Environment
 
 La directive `environment` spécifie une séquence de paires clé-valeur qui seront définies comme des variables d'environnement pour toutes les étapes, ou des étapes spécifiques à une étape, selon l'emplacement de la directive `environment` dans le Pipeline. Cette directive peut être définie à la fois au niveau de l'étape ou du pipeline, ce qui déterminera la portée de ses définitions.
 
@@ -1556,15 +1387,366 @@ pipeline {
 }
 ```
 
-> Dans votre pipeline, créez une variable nommée `dockerhub` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction `credentials()` qui prend en entrée, l'id du credentials jenkins.
+<br>
+
+### **e.3 - Variables d'environnement**
+
+Dans le monde de la programmation, les variables sont très utilisés afin de rendre dynamique le code source. Ce système est très utilisé quand nous voulons avoir un pipeline que nous pourrons réutiliser dans des contextes différents.
+
+Une liste de variable est disponible au sein de Jenkins en ouvrant l'url du serveur master sur un navigateur et en y ajoutant `env-vars.html`. L'url finale est donc sous ce format :
+
+```shell
+http://ip_de_votre_masterjenkins:8080/env-vars.html
+```
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/variables_jenkins.png" style="width:60%">
+</p>
+
+Nous les utiliserons dans le fichier `Jenkinsfile` . Une variable d'environnement Jenkins est une variable globale exposée via la variable `env` et utilisée n'importe où dans le fichier `Jenkinsfile`.
+
+Toute valeur stockée dans la variable `env` est stockée en tant que type `String`. Les variables d'environnement peuvent être définies au niveau supérieur du pipeline, au niveau de l'étape spécifique ou à l'intérieur du bloc `script`.
+
+Nous pouvons lister toutes les variables d'environnement en exécutant la commande shell `printenv` de la façon suivante dans un pipeline :
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage("Datascientest Variables") {
+            steps {
+                sh "printenv"
+            }
+        }
+    }
+}
+```
+
+Nous pourrons accéder aux variables d'environnement dans les étapes du pipeline via l'objet `env`. Un exemple simple serait d'utiliser `env.BUILD_ID` qui renverra l'ID de build actuel.
+
+Nous pouvons également utiliser une version abrégée `BUILD_ID` dans un fichier de pipeline de la façon suivante :
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage("Datascientest Env Variables") {
+            steps {
+                echo "The build id is ${env.BUILD_ID} or $BUILD_ID or ${BUILD_ID} "
+            }
+        }
+    }
+}
+```
+
+Les variables d'environnement peuvent être définies de manière déclarative à l'aide du bloc `environment { }`, à l'aide de `env.VARIABLE_NAME`, ou du bloc `withEnv(["VARIABLE_NAME=value"]) {}`
+
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        SHOOL = "datascientest"
+    }
+
+    stages {
+        stage("Env Variables") {
+            environment {
+                NAME = "Datascientest"
+            }
+
+            steps {
+                echo "SHOOL = ${env.SHOOL}"
+                echo "NAME = ${env.NAME}"
+
+                script {
+                    env.TEST_VARIABLE = "some test value"
+                }
+
+                echo "TEST_VARIABLE = ${env.TEST_VARIABLE}"
+
+                withEnv(["ANOTHER_ENV_VAR=here is some value"]) {
+                    echo "ANOTHER_ENV_VAR = ${env.ANOTHER_ENV_VAR}"
+                }
+            }
+        }
+    }
+}
+```
+
+Le fichier Jenkinsfile prend en charge le remplacement des variables d'environnement. Il y a quelques règles à connaître.
+
+- Le bloc `withEnv(["env=value]) { }` peut remplacer n'importe quelle variable d'environnement.
+
+- Les variables définies à l'aide de bloc `environment {}` ne peuvent pas être remplacées à l'aide d' une affectation impérative `env.VAR = "value"`.
+
+- L'affectation impérative `env.VAR = "value"` ne peut remplacer que les variables d'environnement créées à l'aide de l'affectation impérative.
+
+Nous pouvons mettre en avant les trois cas dans le fichier suivant :
+
+```groovy
+pipeline {
+    agent any
+
+    environment {
+        SHOOL = "datascientest"
+        NAME = "Anthony"
+    }
+
+    stages {
+        stage("Env Variables") {
+            environment {
+                NAME = "lewis" // overrides pipeline level NAME env variable
+                BUILD_ID = "2" // overrides the default BUILD_ID
+            }
+
+            steps {
+                echo "SHOOL = ${env.SHOOL}" // prints "SHOOL = bar"
+                echo "NAME = ${env.NAME}" // prints "NAME = lewis"
+                echo "BUILD_ID =  ${env.BUILD_ID}" // prints "BUILD_ID = 2"
+
+                script {
+                    env.SOMETHING = "1" // creates env.SOMETHING variable
+                }
+            }
+        }
+
+        stage("Override Variables") {
+            steps {
+                script {
+                    env.SHOOL = "I LOVE DATASCIENTEST!" // it can't override env.SHOOL declared at the pipeline (or stage) level
+                    env.SOMETHING = "2" // it can override env variable created imperatively
+                }
+
+                echo "SHOOL = ${env.SHOOL}" // prints "SHOOL = bar"
+                echo "SOMETHING = ${env.SOMETHING}" // prints "SOMETHING = 2"
+
+                withEnv(["SHOOL=DEV UNIVERSITY"]) { // it can override any env variable
+                    echo "SHOOL = ${env.SHOOL}" // prints "SHOOL = DEV UNIVERSITY"
+                }
+
+                withEnv(["BUILD_ID=1"]) {
+                    echo "BUILD_ID = ${env.BUILD_ID}" // prints "BUILD_ID = 1"
+                }
+            }
+        }
+    }
+}
+```
+> À nouveau dans votre fichier `Jenkinsfile`, ajoutez dans une section `environment`, les une variable d'environnement suivantes
+> > `DOCKER_ID` qui va contenir votre identifiant/pseudonyme de votre compte Dockerhub
+> > `DOCKER_IMAGE` qui va contenir le nom de l'image docker que vous nommerez `datascientestapi`
+> > `DOCKER_TAG` qui va prendre comme valeur `v.${BUILD_ID}.0` permettant d'incrémenter la valeur de 1 à chaque nouvelle construction
 
 %%SOLUTION%%
 
 ```groovy
 pipeline {
     agent any
-    environment {
-    	dockerhub = credentials('docker_jenkins')
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
+    }
+}
+```
+%%SOLUTION%%
+
+<br>
+
+### e.4 - Stages et Stage
+
+La section `stages` permet de générer différentes étapes sur le pipeline qui seront visualisées sous la forme de différents segments lors de l'exécution de la tâche.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-stages.jpg" style="width:60%">
+</p>
+
+Jenkins divise graphiquement l'exécution du pipeline en fonction des étapes définies et affiche leur durée et si elle a réussi ou non. La directive `stage` va dans la section `stages` et devrait contenir une directive [steps](https://docs.cloudbees.com/docs/admin-resources/latest/pipeline-syntax-reference-guide/declarative-pipeline#steps), une directive `agent` facultative ou d'autres directives spécifiques à une étape.
+
+En pratique, tout le travail réel effectué par un Pipeline sera enveloppé dans une ou plusieurs directives `stage`.
+
+```groovy
+pipeline {
+	agent any
+	stages {
+		stage ('build') {
+			...
+		}
+		stage ('test: integration-&-quality') {
+			...
+		}
+		stage ('test: functional') {
+			...
+		}
+		stage ('test: load-&-security') {
+			...
+		}
+		stage ('approval') {
+			...
+		}
+        	stage ('deploy:dev') {
+			...
+		}
+         stage ('deploy:staging') {
+			...
+		}
+		stage ('deploy:prod') {
+			...
+		}
+	}
+}
+```
+
+> Ajoutez à votre pipeline une section nommée `stages` qui va contenir trois `stage` nommés `Building`, `Testing` et `Deploying`.  
+
+%%SOLUTION%%
+```groovy
+pipeline {
+    agent any
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
+    }
+    stages {
+        stage('Building') {
+
+        }
+        stage('Testing') {
+
+        }
+	stage('Deploying') {
+
+        }
+    }
+}
+```
+%%SOLUTION%%
+
+
+<br>
+
+### e.5 - Steps
+
+Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Love') {
+            steps {
+                echo 'I love Datascientest'
+            }
+        }
+    }
+}
+```
+
+Pour Linux et MacOS, `sh` est pris en charge. Si nous voulons enchaîner plusieurs commandes, nous pouvons utiliser `sh'''` de la façon suivante :
+
+```groovy
+steps {
+    sh 'echo "I love Datascientest"'
+    sh '''
+    echo "A multiline step"'
+    cd /tests/results
+    ls -lrt
+    '''
+}
+```
+
+Pour Windows, bat ou powershell peut être utilisé de la façon suivante :
+
+```groovy
+steps {
+    bat "mvn clean test -Dsuite=SMOKE_TEST -Denvironment=QA"
+    powershell ".\funcional_tests.ps1"
+}
+```
+
+<br>
+
+> En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
+> - Dans la phase `Building`, vous devez installer les librairies contenues dans le fichier `requirements.txt`
+> - Dans la phase `Testing`, vous devez lancer les tests unitaires
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
+    }
+    stages {
+        stage('Building') {
+            steps {
+	    	sh 'pip install -r requirements.txt'
+            }
+        }
+        stage('Testing') {
+            steps {
+	    	sh 'python -m unittest'
+            }
+        }
+	stage('Deploying') {
+            steps{
+
+            }
+        }
+    }
+}
+```
+%%SOLUTION%%
+
+</br>
+
+### e.6 - script
+
+L' étape `script` prend un bloc de pipeline scripté et l'exécute dans le pipeline déclaratif. Cette étape est utilisée pour ajouter des phrases de pipeline scripté dans une phrase déclarative, offrant ainsi encore plus de fonctionnalités. Cette étape doit être incluse au niveau `stage`.
+
+Plusieurs fois, des blocs de scripts peuvent être utilisés sur différents projets. Ces blocs vous permettent d'étendre les fonctionnalités de Jenkins et peuvent être implémentés en tant que bibliothèques partagées. Plus d'informations à ce sujet peuvent être trouvées sur [les bibliothèques partagées Jenkins](https://jenkins.io/doc/book/pipeline/shared-libraries/).
+
+De plus, les bibliothèques partagées peuvent être importées et utilisées dans le bloc **"script"**, étendant ainsi les fonctionnalités du pipeline.
+
+```groovy
+pipeline {
+    agent any
+    stages {
+        stage('Test') {
+            steps {
+                echo 'Testing schools'
+                script {
+                    def schools = ['Datascientest', 'DevUniversity']
+                    for (int i = 0; i < schools.size(); ++i) {
+                        echo "Testing the ${schools[i]} school"
+                    }
+                }
+            }
+        }
+    }
+}
+```
+
+> Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile.
+> Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api
+> Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
+
+%%SOLUTION%%
+
+```groovy
+pipeline {
+    agent any
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -1581,8 +1763,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
 		'''
 		}
             }
@@ -1595,7 +1777,7 @@ pipeline {
 <br>
 
 
-### d.6 - triggers
+### e.7 - triggers
 
 La directive `triggers` définit les manières automatisées de relancer le Pipeline. Pour les pipelines qui sont intégrés à une source telle que **GitHub** ou **Bitbucket**, cette directive peut ne pas être nécessaire car l'intégration basée sur les webhooks sera probablement déjà présente.
 
@@ -1653,7 +1835,7 @@ pipeline {
 <br>
 
 
-### d.7 - Input
+### e.8 - Input
 
 La directive `input` est définie au niveau du `stage` et fournit la fonctionnalité pour demander une entrée. L'étape sera mise en pause jusqu'à ce qu'un utilisateur la confirme manuellement.
 
@@ -1698,8 +1880,10 @@ pipeline {
 ```groovy
 pipeline {
     agent any
-    environment {
-    	dockerhub = credentials('docker_jenkins')
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -1716,8 +1900,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
 		'''
 		}
             }
@@ -1738,7 +1922,7 @@ pipeline {
 <br>
 
 
-### d.8 - Parrallel
+### e.9 - Parrallel
 
 Les étapes du pipeline déclaratif Jenkins peuvent avoir d'autres étapes imbriquées à l'intérieur qui seront exécutées en parallèle. Cela se fait en ajoutant la directive `parallel` à votre script:
 
@@ -1784,16 +1968,20 @@ Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles 
 
 
 > Créez un nouveau stage `Pushing and Merging` regroupant les deux stages suivantes qui seront exécutés en parallèle:
-> > Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
-> > Un stage `Merging` dan lequel on va devoir merge la branche developing de votre dpot GitHub à notre branche main. Faites attention à toutes les étapes pour le merging des deux branches.
+> - Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
+> - - Créez un section `environment` propre à ce stage qui va contenir une variable nommée `DOCKERHUB_CREDENTIALS` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction credentials() qui prend en entrée l'id du credentials jenkins.
+> - - Vous devez vous connecter à dockerhub à partir de Jenkins grâce à la commande suivante: `echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin`
+> - Un stage `Merging` dan lequel on va devoir merge la branche developing de votre dépot GitHub à notre branche main. Faites attention à toutes les étapes pour le merging des deux branches.
 
 %%SOLUTION%%
 
 ```groovy
 pipeline {
     agent any
-    environment {
-    	dockerhub = credentials('docker_jenkins')
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -1810,8 +1998,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
 		'''
 		}
             }
@@ -1825,31 +2013,34 @@ pipeline {
 	    }
 	}
 	stage('Pushing and Merging'){
-		parallel {
-			stage('Pushing Image') {
-			    steps {
-				sh 'docker push dst_dockerhub/dst_api:latest'
-			    }
-			}
-			stage('Merging') {
-			    steps {
-				script {
-				sh '''
-				git checkout main
-				git merge origin/staging
-				git push -f origin main
-				'''
-				}
-			    }
-			}
+	    parallel {
+		stage('Pushing Image') {
+		   environment {
+			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		    }
+		    steps {
+			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		    }
 		}
+		stage('Merging') {
+		    steps {
+			script {
+			sh '''
+			git checkout main
+			git merge origin/staging
+			git push -f origin main
+			'''
+			}
+		    }
+		}
+	    }
 	}
     }
 }
 ```
 %%SOLUTION%%
 
-### d.9 - post
+### e.10 - Post
 
 La section `post` définit les actions qui seront exécutées à la fin de l'exécution du pipeline. Un certain nombre de blocs de conditions de publication supplémentaires sont pris en charge dans la `post` section : `always`, `changed`, `failure`, `success` et `unstable`.
 
@@ -1915,8 +2106,10 @@ pipeline {
 ```groovy
 pipeline {
     agent any
-    environment {
-    	dockerhub = credentials('docker_jenkins')
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -1933,8 +2126,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
 		'''
 		}
             }
@@ -1948,29 +2141,32 @@ pipeline {
 	    }
 	}
 	stage('Pushing and Merging'){
-		parallel {
-			stage('Pushing Image') {
-			    steps {
-				sh 'docker push dst_dockerhub/dst_api:latest'
-			    }
-			}
-			stage('Merging') {
-			    steps {
-				script {
-				sh '''
-				git checkout main
-				git merge origin/staging
-				git push -f origin main
-				'''
-				}
-			    }
-			}
+	    parallel {
+		stage('Pushing Image') {
+		   environment {
+			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		    }
+		    steps {
+			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		    }
 		}
+		stage('Merging') {
+		    steps {
+			script {
+			sh '''
+			git checkout main
+			git merge origin/staging
+			git push -f origin main
+			'''
+			}
+		    }
+		}
+	    }
 	}
     }
     post {
         always {
-            bat 'docker logout'
+            sh 'docker logout'
         }
     }
 }
@@ -2057,8 +2253,10 @@ pipeline {
 ```groovy
 pipeline {
     agent any
-    environment {
-    	dockerhub = credentials('docker_jenkins')
+    environment { 
+	DOCKER_ID = "dstdockerhub"
+	DOCKER_IMAGE = "datascientestapi"
+	DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
@@ -2075,8 +2273,8 @@ pipeline {
             steps{
 	    	script {
 		sh '''
-		docker build -t dst_dockerhub/dst_api:latest .
-		docker run -d -p 8000:8000 dst_dockerhub/dst_api:latest
+		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
 		'''
 		}
             }
@@ -2090,32 +2288,35 @@ pipeline {
 	    }
 	}
 	stage('Pushing and Merging'){
-		parallel {
-			stage('Pushing Image') {
-			    steps {
-				sh 'docker push dst_dockerhub/dst_api:latest'
-			    }
-			}
-			stage('Merging') {
-			    when {
-				branch 'development'
-			    }
-			    steps {
-				script {
-				sh '''
-				git checkout main
-				git merge origin/staging
-				git push -f origin main
-				'''
-				}
-			    }
-			}
+	    parallel {
+		stage('Pushing Image') {
+		   environment {
+			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		    }
+		    steps {
+			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		    }
 		}
+		stage('Merging') {
+		    when {
+			branch 'development'
+		    }
+		    steps {
+			script {
+			sh '''
+			git checkout main
+			git merge origin/staging
+			git push -f origin main
+			'''
+			}
+		    }
+		}
+	    }
 	}
     }
     post {
         always {
-            bat 'docker logout'
+            sh 'docker logout'
         }
     }
 }
@@ -2130,3 +2331,96 @@ Les pipelines Jenkins sont largement utilisés dans les **environnements CI/CD**
 
 
 #%%
+
+# VI - Jenkins Blue Ocean
+
+<br>
+
+## **A - Introduction**
+
+Blue Ocean est un **plugin** de Jenkins qui simplifie le développement des pipelines de logiciels en permettant aux développeurs de créer des pipelines avec **éditeur visuel**, puis visualiser le **flux de processus** de manière intuitive, de sorte que toute l'organisation et pas seulement les développeurs puisse le comprendre.
+
+Pour cela, la nouvelle expérience utilisateur apportée par **Blue Ocean** est basée sur un design personnalisé et moderne et est créé sur la base de l'expérience utilisateur de Jenkins. Il est principalement conçu pour le processus de pipeline et permet de réduire le désordre causés par des multiples pipelines Jenkins et augmente également la clarté pour chaque membre de l'équipe.
+
+## **B - Principales caractéristiques de Blue Ocean**
+
+- **Personnalisation :** Blue Ocean fonctionne de manière personnalisée. Chaque membre de l'équipe peut facilement visualiser l'exécution et les modifications apportées aux builds.
+
+- **Précision précise :** chaque fois qu'un problème survient ou qu'une interférence est nécessaire dans le processus de pipeline, Blue Ocean indique l'emplacement exact où le bogue est apparu et où vous pouvez faire attention dans le pipeline.
+
+- **Éditeur de pipeline :** Blue Ocean facilite la création d'un pipeline en donnant des conseils à l'utilisateur via des **instructions** et une **représentation** visuelle.
+- Open source : L'océan bleu est open source ; vous êtes en mesure d'apporter des modifications selon vos besoins.
+
+- **Gratuit :** L'océan bleu est totalement gratuit. Il s'agit d'un **plugin** dans Jenkins et vous pouvez le télécharger à partir de la section Gérer Jenkins.
+
+## **C - Installation de Blue Ocean**
+
+Pour installer le Blue Ocean dans le Jenkins, nous devons utiliser la version Jenkins 2.7.x ou ultérieure.
+
+- Dans l'écran d'accueil de Jenkins (tableau de bord Jenkins), cliquons sur l' option **Manage Jenkins** sur le côté gauche de l'écran.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_jenkins.png" style="width:100%">
+</p>
+
+- Maintenant, cliquons sur **Manage plugins**.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/manage_plugins.png" style="width:100%">
+</p>
+
+- Dans la page suivante, cliquons sur l'onglet **Available**.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/available_plugins.png" style="width:100%">
+</p>
+
+- Dans le champ de recherche, entrons `Blue Ocean ` et cochons sur la checkbox afin de sélectionner le plugin `Blue Ocean` et cliquons sur le bouton `install without restart`:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blueocean_install.png" style="width:100%">
+</p>
+
+Une fois l'installation terminée, nous pouvons revenir sur le tableau de bord Jenkins. Nous retrouvons un menu `open blue ocean` sur le menu de gauche de Jenkins.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blueocean_menu.png" style="width:100%">
+</p>
+
+Nous arrivons sur l'interface de Blue Ocean.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blue0.png" style="width:100%">
+</p>
+
+Nous cliquons sur notre projet `datascientest-ci-cd`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blue1.png" style="width:100%">
+</p>
+
+Nous pouvons à présent cliquer sur le bouton `run` afin de voir Blue Ocean en action.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blue2.png" style="width:100%">
+</p>
+
+Une fois terminé, nous avons une interface qui nous montre que tout est Ok.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blue3.png" style="width:100%">
+</p>
+
+#%%
+
+# VII - Conclusion
+
+Nous avons vu différentes façons d'utiliser Jenkins, notamment comment il s'intègre en **CI/CD**. Son installation est simple via l'utilisation du conteneur Docker officiel et elle comporte l'ensemble des capacité de Jenkins.
+
+Dans un premier temps, nous avons observé les premières fonctionnalités de Jenkins avec le _Freestyle Project_ dont notamment la simulation d'un terminal mais aussi des outils en _Software Engineering_ comme `Ant`, `Gradle` et `Maven`.
+
+Puis, nous sommes rentrés plus dans le sujet de l'intégration continue avec l'objet _Pipeline_, qui réalise une suite de tâches, comme la création de l'exécutable, la phase de test et le déploiement du produit. Pour réaliser cet ensemble d'action, nous manipulons un fichier nommé `Jenkinsfile` écrit en `Apache Groovy`. Nous découvrons le succès ou l'échec de notre application depuis l'interface graphique. Soit celle par défaut, soit en utilisant _Blue Ocean_ qui est plus esthétique.
+
+Par ailleurs, il est possible d'employer Jenkins pour des projets où vous travaillez sur plusieurs branches grâce au _Multibranch Pipeline_. Ainsi, vous pouvez observer l'avancement de votre projet sur les différentes branches.
+
+Enfin, dans la continuité du processus CI/CD, nous avons constaté que Jenkins permettait d'automatiser l'exécution des _Pipeline_, selon un emploi du temps ou même à la suite d'une modification de vos fichiers.
