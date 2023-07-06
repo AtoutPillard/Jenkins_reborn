@@ -216,127 +216,131 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 
 #%%
 
-# II - Installation de Jenkins
+# II - Installation et configuration de Jenkins
 
-Nous allons, à présent, installer Jenkins via Docker avec son image officielle. Pour information, Docker est une plateforme open-source utilisée pour automatiser le déploiement d'applications dans des conteneurs. Ces conteneurs Docker permettent d'emballer une application et toutes ses dépendances dans une unité portable et légère, ce qui va faciliter son exécution et son déploiement sur différentes plateformes.
-Quant à l'image Docker, il s'agit d'un paquet autonome et exécutable qui contient tout le nécessaire pour exécuter une application.
+<br>
 
-> Ouvrez une fenêtre de terminal et exécutons les commandes suivantes pour télécharger l'image Docker de Jenkins depuis le registre DockerHub et créer un réseau spécifique à l'outil :
+## **A - Installation de Jenkins**
 
-```shell
-docker pull jenkins/jenkins
-docker pull docker:dind
-docker network create jenkins
-```
-
-> Puis lancez le premier conteneur Docker avec la commande :
-
-Cette commande va nous permettre d'avoir un conteneur Docker autonome (Docker-in-Docker) c'est à dire un environnement Docker fonctionnel à l'intérieur du conteneur Jenkins. Cela va nous permettre d'exécuter des constructions et des déploiements Docker à partir de Jenkins.
-
+Jenkins est disponible à partir des référentiels **Ubuntu** et peut être installé directement à l'aide du gestionnaire de packages APT. Nous avons vu que Jenkins est développé en JAVA. Pour vérifier que Java est installé sur notre système, exécutons la commande :
 
 ```shell
-docker run \
-  --name jenkins-docker \
-  --rm \
-  --detach \
-  --privileged \
-  --network jenkins \
-  --network-alias docker \
-  --env DOCKER_TLS_CERTDIR=/certs \
-  --volume jenkins-docker-certs:/certs/client \
-  --volume jenkins-data:/var/jenkins_home \
-  --publish 2376:2376 \
-  docker:dind \
-  --storage-driver overlay2
+java --version
 ```
 
-> Dans un fichier que vous nommerez `Dockerfile`, recopiez les lignes suivantes qui vont permettre de créer une image personnalisée de Jenkins avec les plugins "blueocean" et "docker-workflow" pré-installés :
-
-```dockerfile
-FROM jenkins/jenkins:2.346.3-jdk11
-USER root
-RUN apt-get update && apt-get install -y lsb-release
-RUN curl -fsSLo /usr/share/keyrings/docker-archive-keyring.asc \
-  https://download.docker.com/linux/debian/gpg
-RUN echo "deb [arch=$(dpkg --print-architecture) \
-  signed-by=/usr/share/keyrings/docker-archive-keyring.asc] \
-  https://download.docker.com/linux/debian \
-  $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
-RUN apt-get update && apt-get install -y docker-ce-cli
-USER jenkins
-RUN jenkins-plugin-cli --plugins "blueocean:1.25.6 docker-workflow:1.29"
-```
-
-> Lancez la commande suivante pour construire notre image Docker :
+Vérifions que Jenkins est bien installé sur notre système et que le service est actif :
 
 ```shell
-docker build -t myjenkins-blueocean:2.346.3-1 .
+sudo systemctl status jenkins
 ```
 
-> Enfin, démarrez Jenkins via ce nouveau conteneur Docker :
+<div class="alert alert-info">Vous devriez constater que Jenkins est bien en mode "running". Toutefois, nous vous avons préparé les prochaines étapes pour reproduire l'installation sur votre machine.</div>
+
+### a.1 - Jenkins Master
+
+Puisque Jenkins est basé sur Java, nous devons installer **OpenJDK**. Pour cela, exécutons la commande :
 
 ```shell
-docker run \
-  --name jenkins-blueocean \
-  --restart=on-failure \
-  --detach \
-  --network jenkins \
-  --env DOCKER_HOST=tcp://docker:2376 \
-  --env DOCKER_CERT_PATH=/certs/client \
-  --env DOCKER_TLS_VERIFY=1 \
-  --publish 8080:8080 \
-  --publish 50000:50000 \
-  --volume jenkins-data:/var/jenkins_home \
-  --volume jenkins-docker-certs:/certs/client:ro \
-  myjenkins-blueocean:2.346.3-1
+sudo apt install openjdk-11-jdk-headless -y
 ```
 
-<div class="alert alert-info"><i class="icon circle info"></i>
-Pour ne pas recopier ces longues commandes Docker, vous pouvez passer par des <code>alias</code>, pour les rendre permanent, vous pouvez apprendre en faire depuis ce <a href="https://www.linuxtricks.fr/wiki/personnaliser-son-shell-alias-couleurs-bashrc-cshrc">lien</a>.
-</div>
+Mettre à jour notre machine. Il est recommandé de toujours mettre à jour les packages système.
 
-> Après avoir lancer les conteneurs Docker, accédez à Jenkins en allant sur `localhost:8080` ou `adresse-ip-vm:8080` (si vous utilisez la machine virtuelle) sur notre navigateur internet. 
+Exécutons donc la commande :
 
-Nous arrivons alors sur la page ci-dessous:
+```shell
+sudo apt update -y
+```
+
+Exécutons ensuite :
+
+```shell
+sudo apt upgrade -y
+```
+
+Installons à présent Jenkins. Nous ajoutons la clé du référentiel Jenkins à notre système :
+
+```shell
+curl -fsSL https://pkg.jenkins.io/debian/jenkins.io.key | sudo tee /usr/share/keyrings/jenkins-keyring.asc > /dev/null
+echo deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update
+sudo apt-get install jenkins -y
+```
+
+Jenkins est démarré lors de l'installation sur notre serveur. Nous pourrons confirmer qu'il est en cours d'exécution en exécutant la commande :
+
+```shell
+sudo systemctl status jenkins
+```
+
+À partir de la sortie, nous pouvons voir que Jenkins est opérationnel.
+
+Si Jenkins n'est pas démarré, exécutons la commande ci-dessous pour qu'il soit opérationnel :
+
+```shell
+sudo systemctl start jenkins
+```
+
+Pour activer Jenkins au démarrage, exécutons la commande :
+
+```shell
+sudo systemctl enable --now jenkins
+```
+
+Jenkins démarrera désormais chaque fois que nous redémarrons ou allumons notre serveur.
+
+## **B - Configuration de Jenkins**
+
+Connectons-nous au serveur Jenkins à l'aide de notre navigateur `http://adresseip:8080/`.
+
+<div class="alert alert-info">L'interface Web Jenkins utilise la langue configurée par défaut sur le navigateur du client. Vous pouvez changer ce paramètre à tout moment. Pour simplifier la gestion de nos exercices, nous avons choisit de paramétrer notre navigateur en Anglais.</div>
+
+Nous obtiendrons la première page qui est l'écran "**Déverrouiller Jenkins**". Afin de configurer Jenkins en toute sécurité, nous devrons coller le mot de passe de l'administrateur.
+
+Nous exécuterons la commande suivante afin de révéler le mot de passe:
+
+```shell
+sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+```
+
+Affichage en sortie:
+
+```shell
+943eb6a8472b4e929945a5cb65745f24
+```
+
+Copions et collons le mot de passe dans le champ de texte « **Administrator Password** », comme indiqué. Une fois collé, cliquons sur le bouton « **Continuer** »:
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/unlock.png" style="width:65%">
 </p>
 
-> Pour générer le mot de passe demandé, exécutez la commande suivante :
-
-```shell
-docker logs jenkins-blueocean
-```
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/find_admin_password.png" style="width:65%">
-</p>
-
-<div class="alert alert-info"><i class="icon circle info"></i>
-Si vous avez besoin d'accéder au répertoire <code>/var/jenkins_home</code>, qui contient des informations relatives à Jenkins, lancez la commande <code>docker exec -it jenkins-blueocean bash</code>.
-</div>
-
-Une fois le mot de passe entré, nous arriverons sur la page suivante :
+Une fois que nous avons recopié le mot de passe généré, nous arriverons sur la page suivante :
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/custo.png" style="width:65%">
 </p>
 
-> Sélectionnez le bouton _Install suggested plugin_. Vous devriez tomber sur l'écran de configuration de la connexion administrateur. Remplissez alors le formulaire avec les informations requises.
+Sélectionnons le bouton « **Install suggested plugin** »,
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/install_jenkins.png" style="width:65%">
+</p>
+
+Puis remplissons le formulaire avec les informations requises.
+
+L'écran suivant configure la connexion administrateur, remplissons les informations souhaitées :
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/jenkins-admin-user.png" style="width:65%">
 </p>
 
-<div class="alert alert-warning">
-Attention à bien noter vos identifiants de connexion.
-</div>
+Vient ensuite la configuration de l'instance de votre URL Jenkins. Nous pouvons laisser la configuration par défaut.
 
-Nous devrions arriver sur le dashboard Jenkins :
+Cliquons sur commencer à utiliser Jenkins. Nous serons alors redirigé vers l'interface Jenkins :
 
 <p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/welcome.png" style="width:75%">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/welcome.png" style="width:90%">
 </p>
 
 Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le **menu principal** permettant d'accéder aux différentes fonctionnalités de Jenkins comme la création de projets, la consultation de l'historique, ou encore la configuration de Jenkins.
@@ -632,6 +636,79 @@ Ceci sera la liste de nos informations secretes :
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/variables_list.png" style="width:100%">
 </p>
+
+
+## **D - Installation de Docker**
+
+Nous devons ensuite ajouter l'utilisateur Jenkins au groupe Docker afin que Jenkins puisse piloter le `Docker` engine :
+
+```shell
+sudo usermod -aG docker jenkins
+```
+
+Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
+
+La raison du succès de Docker dans l'environnement DevOps est sa capacité à conteneuriser les applications. Cela réduit le temps de développement et de publication d'une solution pour une société de développement de logiciels.
+
+Il permet à une application de s'exécuter sur n'importe quelle application, quelles que soient les configurations d'hôte. Cela permet à toutes les équipes de collaborer tout en travaillant efficacement.
+
+[Docker](http://docker.com/) nous permet de rationaliser et de contrôler les modifications tout au long du cycle de développement. Nous pouvons l'utiliser tout au long des étapes de développement, de production et de publication. Si nous souhaitons revenir à une version précédente, vous pouvez le faire en utilisant Docker.
+
+Nous pouvons également nous assurer qu'une fonctionnalité fonctionne dans l'environnement de production selon qu'elle est opérationnelle ou non dans l'environnement de développement.
+
+<div class="alert alert-info"><i class="icon circle info"></i>
+Docker est déjà installé sur les machines virtuelles fournies, cette section sert pour ceux qui utilisent leurs ordinateurs personnelles. Vous pouvez le vérifier avec la commande <code>docker -v</code>
+</div>
+
+Nous allons installer Docker à fin que Jenkins puisse être utilisé pour manipuler nos différentes images Docker. Nous installerons Docker en nous servant des commandes suivantes :
+
+```shell
+sudo apt-get install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+sudo systemctl enable --now docker
+```
+
+Nous devons ensuite ajouter l'utilisateur Jenkins au groupe Docker afin que Jenkins puisse piloter le `Docker engine`.
+
+Nous le ferons de la façon suivante :
+
+```shell
+sudo usermod -aG docker jenkins
+```
+
+<br>
+
+## **E - Docker Hub**
+
+Docker Hub est un registre Docker, une version **hébergée** dans le cloud, une application côté serveur open-source, évolutive et sans état.
+
+Il peut gérer le partage et le stockage des images Docker. À l'aide de Docker, les développeurs peuvent y accéder en tant que public et créer leur propre espace de référentiels privés et **automatiser** les fonctions personnalisées de création d'applications, les groupes de travail et les **webhooks**.
+
+Un développeur formé aux pratiques DevOps peut télécharger l'image officielle du conteneur du système de base de données orienté document MongoDB depuis Docker Hub pour s'entraîner sur une application déployée dans les conteneurs par exemple.
+
+### e.1 - Fonctionnalités du hub Docker
+
+- Référentiels : il contient le processus Push et Pull pour les images de conteneurs.
+
+- Équipes et organisations : il permet au développeur/utilisateur d'accéder à des référentiels privés d'images de conteneurs.
+
+- Images officielles de **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par Docker.
+
+- Images d'éditeur vérifiées par **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par des fournisseurs externes.
+
+- **Builds** : il fournit les mécanismes qui formulent automatiquement des images de conteneur à partir de **Bitbucket** et **GitHub** et les poussent vers Docker Hub.
+
+- **Webhooks** : il déclenche certaines actions après une poussée réussie vers un conteneur pour combiner Docker Hub avec des services supplémentaires.
+
+- **Docker** implémente un outil Docker Hub CLI qui est actuellement expérimental et une API (Micro-service) qui nous permet de communiquer avec Docker Hub. Nous pouvons parcourir la documentation [de l'API Docker Hub](https://docs.docker.com/docker-hub/api/latest/) pour rechercher les points de terminaison entre accolades.
+
+Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docker.com/signup. Nous nous en servirons dans la suite de notre cours.
+
+#%%
 
 
 <br>
