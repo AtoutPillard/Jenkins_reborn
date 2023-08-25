@@ -419,7 +419,22 @@ Une fois terminé, le plugin sera disponible en option lors de la configuration 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github-logo.webp" style="width:30%">
 </p>
 
-## **B - Installation de Docker**
+## B - Création du dépôt Github
+
+Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Pour rappel, GitHub est une plateforme en ligne utilisée pour la gestion de versions et la collaboration dans le développement de logiciels. 
+
+Nous commencerons par créer un nouveau dépôt sur notre compte Github, si vous n'en avez pas, vous pouvez en créer un à l'adresse de [GitHub](https://github.com/signup).
+
+Nous allons donc créer un dépôt afin de pouvoir versionner notre code source et le connecter à Jenkins. Allons sur Github créer un nouveau dépôt appelé `Jenkins-datascientest`, avec une visibilité `public`:
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/repo_github.png" style="width:60%">
+</p>
+
+Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`.
+
+
+## **C - Installation de Docker**
 
 Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
 
@@ -463,7 +478,7 @@ sudo usermod -aG docker jenkins
 
 <br>
 
-## **C - Docker Hub**
+## **D - Docker Hub**
 
 Docker Hub est un registre Docker, une version **hébergée** dans le cloud, une application côté serveur open-source, évolutive et sans état.
 
@@ -471,7 +486,7 @@ Il peut gérer le partage et le stockage des images Docker. À l'aide de Docker,
 
 Un développeur formé aux pratiques DevOps peut télécharger l'image officielle du conteneur du système de base de données orienté document MongoDB depuis Docker Hub pour s'entraîner sur une application déployée dans les conteneurs par exemple.
 
-### C.1 - Fonctionnalités du hub Docker
+### Fonctionnalités du hub Docker
 
 - Référentiels : il contient le processus Push et Pull pour les images de conteneurs.
 
@@ -492,7 +507,7 @@ Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docke
 <br>
 
 
-## **D - Credentials**
+## **E - Credentials**
 Sur Jenkins, les credentials font référence aux informations d'identification nécessaires pour accéder à différents services, systèmes ou environnements lors de l'exécution de pipelines ou de jobs.
 
 Allons, à présent, créer nos éléments de connexion sur Jenkins. 
@@ -708,13 +723,16 @@ Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lign
 ## **V - Pipeline Jenkins**
 
 <br>
-Précédemment, nous avons vu la fonctionnalité Freestyle Project nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
+Précédemment, nous avons vu la fonctionnalité *Freestyle Project* nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
 
 Nous avions explicité l'intérêt d'utiliser Jenkins par la possibilité d'automatiser certaines étapes dans la mise en production d'un logiciel. L'ensemble des étapes de cette mise en production constitue le pipeline de notre projet. Le pipeline dépend de vos projets les étapes peuvent être différentes.
 
-Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub dans lequel nous avons ajouté le webhook lors du chapitre précédent. Nous allons ajouter les fichiers suivant pour simuler le déploiement d'une API comme vous pourriez le faire en entreprise.
+Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub crée précédemment. Nous allons ajouter les fichiers suivant pour simuler le déploiement d'une API puis grâce à Jenkins, faire un pipeline qui va automatiser chaque étapes de ce déploiement. 
 
-> Dans un fichier nommé `app.py`, nous allons le code ci-dessous qui va créer une API Flask avec plusieurs routes.
+Les fichiers suivants sont à mettre sur votre repository github.
+
+> Dans un fichier nommé `app.py`, nous allons coller le code ci-dessous qui va créer une API Flask avec plusieurs routes.
+
 ```python
 ##########################################################################
 ## Imports
@@ -781,7 +799,9 @@ def whoami_name(name):
 if __name__ == '__main__':
     app.run()
 ```
+
 > Créez un fichier `test_main.py` qui va contenir les tests unitaires de notre API:
+
 ```python
 import unittest
 from app import app
@@ -805,13 +825,15 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-> Dans un fichier nommé `requirements.txt`, ajoutez les librairies nécessaire pour le fonctionnement de l'API ainsi que des tests unitaires: 
+> Dans un fichier nommé `requirements.txt`, ajoutez les librairies nécessaires pour le fonctionnement de l'API ainsi que des tests unitaires: 
+
 ```txt
 flask
 unittest
 ```
 
 > Enfin nous allons contenairiser notre API avec Docker avec le `Dockerfile` ci-dessous:
+
 ```shell
 # Dockerfile to build a flask app
 
@@ -824,7 +846,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "-m" , "flask", "run"]
+CMD ["python", "-m" , "flask", "run"]
 ```
 
 Nous allons retrouver dans ce dépôt notre API, un fichier de tests unitaires, un fichier listant les librairies à installer et un fichier DockerFile. Maintenant que notre API est prête, nous allons pouvoir faire un pipeline composée de plusieurs phases qui va contruire l'API, la tester et la déployer.
@@ -1341,7 +1363,7 @@ Le fichier Jenkinsfile prend en charge le remplacement des variables d'environne
 
 - L'affectation impérative `env.VAR = "value"` ne peut remplacer que les variables d'environnement créées à l'aide de l'affectation impérative.
 
-Nous pouvons mettre en avant les trois cas dans le fichier suivant :
+Nous pouvons mettre en avant les trois cas dans le pipeline suivant :
 
 ```groovy
 pipeline {
@@ -1393,7 +1415,7 @@ pipeline {
 }
 ```
 > À nouveau dans votre fichier `Jenkinsfile`, ajoutez dans une section `environment`, les variables d'environnement suivantes que nous utiliserons plus tard:
-> - `DOCKER_ID` qui va contenir l'ID du credential de votre compte Dockerhub que nous avons créée dans la partie 'Credentials'
+> - `DOCKER_ID` qui va contenir le pseudonyme de votre compte Dockerhub que nous avons créée dans la partie `Credentials`
 > - `DOCKER_IMAGE` qui va contenir le nom de l'image docker que vous nommerez `datascientestapi`
 > - `DOCKER_TAG` qui va prendre comme valeur `v.${BUILD_ID}.0` permettant d'incrémenter la valeur de 1 à chaque nouvelle construction
 
@@ -1491,6 +1513,8 @@ pipeline {
 
 Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
 
+Voici un exemple de `steps` dans un pipeline Jenkins
+
 ```groovy
 pipeline {
     agent any
@@ -1528,7 +1552,7 @@ steps {
 
 <br>
 
-> En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
+> En ajoutant une directive `steps` dans chacune des trois stages, effectuez les commandes suivantes:
 > - Dans la phase `Building`, vous devez installer les librairies contenues dans le fichier `requirements.txt`
 ```shell
 pip install -r requirements.txt
@@ -1559,7 +1583,7 @@ pipeline {
 	    	      sh 'python -m unittest'
             }
         }
-	stage('Deploying') {
+	      stage('Deploying') {
             steps{
 
             }
@@ -1598,13 +1622,17 @@ pipeline {
 }
 ```
 
-> - Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile. Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api
+> * Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile. Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api.
 ```shell
 docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
 ```
-> - Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
+> * Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
 ```shell
 docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+```
+> * Pour éviter tous conflits de port avec les conteneurs Docker lorsque le pipeline se relance, ajoutez la commande suivante avant la création de l'image.
+```shell
+docker rm -f jenkins
 ```
 
 %%SOLUTION%%
@@ -1632,6 +1660,7 @@ pipeline {
           steps{
 	    	    script {
               sh '''
+              docker rm -f jenkins
               docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
               docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
               '''
@@ -1750,39 +1779,40 @@ pipeline {
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
             steps {
-	    	sh 'pip install -r requirements.txt'
+	    	      sh 'pip install -r requirements.txt'
             }
         }
         stage('Testing') {
             steps {
-	    	sh 'python -m unittest'
+	    	      sh 'python -m unittest'
             }
         }
         stage('Deploying') {
           steps{
             script {
               sh '''
+              docker rm -f jenkins
               docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
               docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
               '''
             }
           }
         }
-      stage('User Acceptance') {
+        stage('User Acceptance') {
           steps{
-        input {
-                message "Proceed to push to main"
-                ok "Yes"
-              }    
+            input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
           }
-      }
+        }
     }
 }
 ```
@@ -1837,10 +1867,10 @@ Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles 
 
 
 > Créez un nouveau stage `Pushing and Merging` regroupant les deux stages suivantes qui seront exécutés en parallèle:
-> - Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
-> - - Créez un section `environment` propre à ce stage qui va contenir une variable nommée `DOCKERHUB_CREDENTIALS` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction credentials() qui prend en entrée l'id du credentials jenkins.
-> - - Vous devez vous connecter à dockerhub à partir de Jenkins grâce à la commande suivante: `echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin`
-> - Un stage `Merging` dan lequel on va devoir merge la branche developing de votre dépot GitHub à notre branche main. Faites attention à toutes les étapes pour le merging des deux branches.
+> * Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
+> * * Créez une section `environment` propre à ce stage qui va contenir une variable nommée `DOCKERHUB_CREDENTIALS`. Elle va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction credentials() qui prend en entrée, l'id du credentials jenkins.
+> * * Vous devez vous connecter à dockerhub à partir de Jenkins grâce à la commande suivante: `echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin`
+> * Un stage `Merging` dans lequel nous allons mettre un simple `echo 'Merging done'`. Modifier des branches directement sur le dépot Github nécessite plus de manipulation que nous verrons dans la partie `Compléments`. 
 
 %%SOLUTION%%
 
@@ -1848,62 +1878,58 @@ Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles 
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
+          steps {
+	    	    sh 'pip install -r requirements.txt'
+          }
         }
         stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
+          steps {
+	    	    sh 'python -m unittest'
+          }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
+	      stage('Deploying') {
+          steps{
+            script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
             }
+          }
         }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
+	      stage('User Acceptance') {
+	        steps{
+		        input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
+	        }
+	      }
+	      stage('Pushing and Merging'){
+	        parallel {
+		        stage('Pushing Image') {
+		          environment {
+			          DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		          }
+		          steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			          sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		          }
+		        }
+            stage('Merging') {
+              steps {
+                echo 'Merging done'
+              }
+            }
+	      }
 	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
     }
 }
 ```
@@ -1976,67 +2002,63 @@ pipeline {
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
+          steps {
+	    	    sh 'pip install -r requirements.txt'
+          }
         }
         stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
+          steps {
+	    	    sh 'python -m unittest'
+          }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
+	      stage('Deploying') {
+          steps{
+            script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
             }
+          }
         }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
+	      stage('User Acceptance') {
+	        steps{
+		        input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
+	        }
+	      }
+	      stage('Pushing and Merging'){
+	        parallel {
+		        stage('Pushing Image') {
+		          environment {
+			          DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		          }
+		          steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			          sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		          }
+		        }
+            stage('Merging') {
+              steps {
+                echo 'Merging done'
+              }
+            }
+	      }
 	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
     }
     post {
-        always {
-            sh 'docker logout'
-        }
+      always {
+        sh 'docker logout'
+      }
     }
 }
 ```
@@ -2114,83 +2136,6 @@ pipeline {
     }
 }
 ```
-
-> Ajoutez au stage `Merging`, la condition de ne merge que la branche `development` avec la branche `main`
-
-%%SOLUTION%%
-
-```groovy
-pipeline {
-    agent any
-    environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
-    }
-    stages {
-        stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
-        }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
-            }
-        }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
-	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    when {
-			branch 'development'
-		    }
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
-    }
-    post {
-        always {
-            sh 'docker logout'
-        }
-    }
-}
-```
-%%SOLUTION%%
 
 Nous avons maintenant fini notre pipeline!
 
@@ -2284,26 +2229,9 @@ Une fois terminé, nous avons une interface qui nous montre que tout est Ok.
 
 #%%
 
+# VII - Compléments
 
-## **B - Intégration de Jenkins avec GitHub**
-
-### b.1 - Création du dépôt Github
-
-Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Nous commencerons par créer un nouveau dépôt sur notre compte Github, si vous n'en avez pas, vous pouvez en créer un à l'adresse de [GitHub](https://github.com/signup).
-
-Nous allons donc créer un dépôt afin de pouvoir versionner notre code source et le connecter à Jenkins. Allons sur Github créer un nouveau dépôt appelé `Jenkins-datascientest`, avec une visibilité `public`:
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/repo_github.png" style="width:60%">
-</p>
-
-Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`. Une fois sur l'interface de dépôt, nous pouvons aller sur les réglages du dépôt en cliquant sur `settings`.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/setting_github.png" style="width:100%">
-</p>
-
-### b.2 - Qu'est-ce qu'un webhook ?
+## **A - Les Webhooks Github**
 
 **Les Webhooks sont des notifications déclenchées par des événements**. Dans la plupart des cas, ils sont utilisés pour la communication entre les systèmes. C'est le moyen le plus simple de recevoir une alerte lorsque un évènement (tentative de connexion, mise à jour...) se passe dans un autre système.
 
@@ -2327,13 +2255,20 @@ Cette URL de webhook est appelée **point de terminaison** de webhook. Les point
 
 Nous allons donc le mettre en place sur Github afin d'alerter notre instance de Jenkins.
 
+Sur votre dépot github, nous pouvons aller sur les réglages du dépôt en cliquant sur `settings`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/setting_github.png" style="width:100%">
+</p>
+
+
 Nous pouvons à présent cliquer sur `webhooks`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_webhook.png" style="width:100%">
 </p>
 
-Nous pouvons cliquer sur `Add Webhook`.
+Nous cliquerons sur `Add Webhook`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/add_webhook.png" style="width:100%">
@@ -2413,6 +2348,8 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 ```
 
 > Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
+
+
 
 
 # VII - Conclusion
