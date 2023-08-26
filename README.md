@@ -2139,6 +2139,27 @@ pipeline {
 
 Nous avons maintenant fini notre pipeline!
 
+Vous pouvez cliquez ensuite sur le bouton `Build Now` sur le dashboard de gauche, vous obtenez l'image suivante.
+
+#TODO: Ajouter l'image
+
+Vous pouvez observer le succès ou l'échec des différentes étapes depuis la `Stage View` et le temps imparti pour réaliser l'étape. La couleur verte indique bien sûr que c'est un succès, et le rouge un echec. 
+
+Nous pouvons voir aussi le déroulé des actions de notre étape en allant sur le *Build#1* comme avec un Freestyle Project, l'option `Console Output` apparaîtra sur le dashboard. 
+
+Il est possible aussi de voir les résultats depuis le Stage View en cliquant sur le rectangle vert, une option pour voir les logs apparaîtra ou sinon en allant dans la page de garde du *Build#1* accessible en cliquant sur le `#1`. 
+
+Nous allons maintenant voir comment gérer les erreurs. Pour cela nous allons simuler une faute de frappe en changeant la step du stage `Merging` par: 
+```shell
+echoo 'Merging done'
+```
+
+En cliquant à nouveau sur le bouton `Build Now`, nous obtenons cela :
+
+#TODO: Ajouter l'image
+
+Comme prévu, nous obtenons une erreur. En affichant les logs, nous voyons quelle partie de l'étape Merging n'a pas fonctionné. En se concentrant sur la première erreur, nous observons que `echoo` n'existe pas, en effet nous avons mal écrit la commande. Vous pouvez, dès à présent, corriger l'erreur.
+
 Les erreurs de syntaxe des pipelines **déclaratifs** sont signalées dès le début de l'exécution. C'est une fonctionnalité intéressante car vous ne perdrez pas de temps jusqu'à ce qu'une étape ne réalise pas qu'il y a une faute de frappe ou une faute d'orthographe.
 
 Comme déjà mentionné, les pipelines peuvent être écrits de manière **déclarative** ou **scriptée**. En effet, la méthode déclarative est construite au-dessus de la méthode scriptée, ce qui facilite son extension comme expliqué, en ajoutant des étapes de script.
