@@ -669,7 +669,9 @@ Examinons brièvement les différents types de job à Jenkins :
 
 Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique `Hello World`.
 
-Pour cela, cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. Donnez un nom à votre projet, puis sélectionnez l'option "Construire un projet free-style" (_Freestyle project_) et appuyez sur le bouton OK.
+Pour cela, cliquez sur `Nouveau Item` (*New Item*) qui est la première option du dashboard. 
+
+Donnez un nom à votre projet, puis sélectionnez l'option `Construire un projet free-style` (*Freestyle project*) et appuyez sur le bouton `OK`.
 
 Vous devriez obtenir la page suivante :
 
@@ -677,45 +679,64 @@ Vous devriez obtenir la page suivante :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/desc_projet.png" style="width:75%">
 </p>
 
-Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le _Source Code Management_ , automatiser les _build_ du projet et réaliser des actions selon si le build a été un succès ou un échec.
+Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. 
+
+Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le `Source Code Management` , automatiser les `build` du projet et réaliser des actions selon si le build a été un succès ou un échec.
 
 <div class="alert alert-info"><i class="icon circle info"></i>
 Si vous observez bien, vous apercevez un point d'interrogation à la droite de chaque proposition, qui comme attendu fournit une explication, n'hésitez pas à les consulter.
 </div>
 
-Ici, nous voulons simplement afficher un _Hello World_ , pour cela nous allons sur la section _Build_, qui va retranscrire les actions que nous voulons faire. Nous choisissons l'action depuis le bouton _Add build step_. Nous avons plusieurs options, dans notre cas, nous prenons _Execute shell_.
+Ici, nous voulons simplement afficher un Hello World, pour cela nous allons sur la section `Build Steps`, qui va retranscrire les actions que nous voulons faire. 
+
+Nous choisissons l'action depuis le bouton `Add build step`. 
+Nous avons plusieurs options, dans notre cas, nous prenons `Execute shell`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/build_2.png" style="width:75%">
 </p>
 
-Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée. Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton _Add build step_.
+Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée.
+
+> Coller les commandes suivantes:
+```shell
+echo 'Hello World'
+java -version
+``` 
+
+Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton `Add build step`.
 
 <div class="alert alert-info">
 <i class="fa fa-info-circle"></i>
 Des variables d'environnement sont aussi disponibles depuis la route /env-vars.html/, vous pouvez les utiliser pour vos scripts et les afficher via un <code>echo</code>.
 </div>
 
-Une fois cela fait, cliquez sur le bouton Save et cela vous renvoie à la page principale du projet.
+Une fois cela fait, cliquez sur le bouton `Save` et cela vous renvoie à la page principale du projet.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/page_garde.png" style="width:65%">
 </p>
 
-Sur le Dashboard à votre gauche, cliquez sur le bouton "Lancer un Build" (_Build Now_), cela va exécuter les actions que vous avez définies dans le _Add Build Step_. En dessous du Dashboard se trouve une section _Build History_ qui est un historique des Build. Une fois, le job lancé, vous devrez pouvoir observer un #1 associé avec un tick vert entouré, si le build avait échoué, nous aurions eu une croix rouge entouré. En cliquant sur le #1, cela vous renvoie aux informations relatives au build.
+Sur le Dashboard à votre gauche, cliquez sur le bouton `Lancer un Build` (*Build Now*), cela va exécuter les actions que vous avez définies dans le `Add Build Step`. 
+
+En dessous du Dashboard se trouve une section `Build History` qui est un historique des Build. Une fois, le job lancé, vous devriez pouvoir observer un `#1` associé avec un tick vert entouré. Si le build avait échoué, nous aurions eu une croix rouge entouré.
+
+En cliquant sur le `#1`, nous aurons accès aux informations relatives au build.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/after_build1.png" style="width:65%">
 </p>
 
-Sur cette nouvelle page, le dashboard est différent et il y apparaît un onglet _Console Output_, où se trouve les sorties des actions demandées, nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
+Sur cette nouvelle page, nous avons onglet `Console Output`, où se trouve les sorties des actions demandées: nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/resultat.png" style="width:65%">
 </p>
 
 <div class="alert alert-info"><i class="icon circle info"></i>
-Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
+Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. 
+
+Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
 </div>
 
 #%%
