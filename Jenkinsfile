@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+	    docker {
+                    image 'python:3-alpine'
+                }
+    }
     environment { 
       DOCKER_ID = "dstdockerhub"
       DOCKER_IMAGE = "datascientestapi"
@@ -7,11 +11,6 @@ pipeline {
     }
     stages {
         stage('Building') {
-	agent {
-                docker {
-                    image 'python:3-alpine'
-                }
-            }
           steps {
 		withEnv(["HOME=${env.WORKSPACE}"]) {
 	    	    sh 'pip install -r requirements.txt'
