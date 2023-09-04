@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    agent {
+        docker { image 'python:3' }
+    }
     environment { 
       DOCKER_ID = "dstdockerhub"
       DOCKER_IMAGE = "datascientestapi"
@@ -8,7 +10,7 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-	    	    sh 'pip3 install -r requirements.txt'
+	    	    sh 'pip install -r requirements.txt'
           }
         }
         stage('Testing') {
