@@ -12,9 +12,7 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-		withEnv(["HOME=${env.WORKSPACE}"]) {
 	    	    sh 'pip install -r requirements.txt'
-         	}
            }
 	}
         stage('Testing') {
