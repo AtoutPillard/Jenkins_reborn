@@ -10,8 +10,8 @@ pipeline {
           steps {
 		  script{
 			sh '''
- 			python -m pip install -r requirements.txt
-    			python -m unittest
+ 			python3 -m pip install -r requirements.txt
+    			python3 -m unittest
    			'''
 		  }
            }
