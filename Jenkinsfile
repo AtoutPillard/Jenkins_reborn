@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-	    docker {
-                    image 'python:3-alpine'
-                }
-    }
+    agent any
     environment { 
       DOCKER_ID = "dstdockerhub"
       DOCKER_IMAGE = "datascientestapi"
