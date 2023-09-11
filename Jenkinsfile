@@ -17,15 +17,11 @@ pipeline {
    			 python3 -m venv env
  			source ./env/bin/activate
  			python -m pip install -r requirements.txt
+    			python -m unittest
    			'''
 		  }
            }
 	}
-        stage('Testing') {
-          steps {
-	    	    sh 'python -m unittest'
-          }
-        }
 	      stage('Deploying') {
           steps{
             script {
