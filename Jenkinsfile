@@ -8,13 +8,11 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-		  withEnv(["HOME=${env.WORKSPACE}"]) {
 		  script{
 			sh '''
  			python -m pip install -r requirements.txt
     			python -m unittest
    			'''
-		  }
 		  }
            }
 	}
