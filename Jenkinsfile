@@ -12,7 +12,13 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-	    	    sh 'pip install -r requirements.txt --user'
+		  script{
+			sh '''
+   			 python3 -m venv env
+ 			source ./env/bin/activate
+ 			python -m pip install -r requirements.txt
+   			'''
+		  }
            }
 	}
         stage('Testing') {
