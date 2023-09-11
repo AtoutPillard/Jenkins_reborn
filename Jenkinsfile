@@ -1,9 +1,5 @@
 pipeline {
-    agent {
-	    docker {
-                    image 'python:3-alpine'
-                }
-    }
+    agent any
     environment { 
       DOCKER_ID = "dstdockerhub"
       DOCKER_IMAGE = "datascientestapi"
@@ -14,9 +10,7 @@ pipeline {
           steps {
 		  script{
 			sh '''
-   			 python3 -m venv env
- 			source ./env/bin/activate
- 			python -m pip install -r requirements.txt
+ 			python -m pip install --target ${env.WORKSPACE} -r requirements.txt
     			python -m unittest
    			'''
 		  }
