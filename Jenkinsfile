@@ -8,15 +8,15 @@ pipeline {
     stages {
         stage('Building') {
           steps {
-		  script{
-			sh '''
- 			python3 -m pip install -r requirements.txt
-    			python3 -m unittest
-   			'''
-		  }
+ 		sh python3 -m pip install -r requirements.txt
            }
 	}
-	      stage('Deploying') {
+	stage('Unit Testing') {
+          steps {
+    		sh python3 -m unittest
+           }
+	}
+	stage('Deploying with Docker') {
           steps{
             script {
               sh '''
@@ -27,9 +27,9 @@ pipeline {
             }
           }
         }
-	      stage('User Acceptance') {
+	stage('User Acceptance') {
           input {
-            message "Proceed to push to main"
+            message "Proceed to push to Dockerhub"
             ok "Yes"
           }
           steps{
@@ -38,7 +38,7 @@ pipeline {
 	      }
 	      stage('Pushing and Merging'){
 	        parallel {
-		        stage('Pushing Image') {
+		        stage('Docker Push') {
 		          environment {
 			          DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
 		          }
@@ -51,11 +51,11 @@ pipeline {
 		          	}
 		        }
 			}
-            stage('Merging') {
-              steps {
-                echo 'Merging done'
-              }
-            }
+		    stage('Merging') {
+		      steps {
+			echo 'Merging done'
+		      }
+		    }
 	      }
 	    }
     }
