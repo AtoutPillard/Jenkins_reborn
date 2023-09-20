@@ -127,7 +127,7 @@ Jenkins permettra donc de résoudre ce problème. Jenkins est un outil d'intégr
 
 - Peu de temps après une validation, le serveur Jenkins trouve les **modifications** qui se sont produites dans le référentiel de code source. Jenkins dessinera ces changements et commencera à préparer une **nouvelle version**.
 
-- Si la construction échoue, l'équipe concernée en sera informée.
+- Si la construction échoue, le résultat des builds sera affiché. Il est possible de configurer l'alerting afin que l'équipe concernée soit informée.
 
 - Si la construction réussit, le serveur Jenkins **déploie** la construction dans le serveur de test.
 
@@ -159,7 +159,7 @@ Enfin, puisqu'il s'agit d'un outil **open-source**, il est régulièrement mis �
 
 - Il ne nécessite pas de composants ou dépendances supplémentaires. Cela signifie qu'il est facile à installer.
 
-- Il prend en charge **1000 plugins** ou plus pour faciliter notre travail. Si un plugin n'existe pas, nous pouvons écrire le script correspondant et le partager avec la communauté.
+- Il prend en charge **1800 plugins** ou plus pour faciliter notre travail. Si un plugin n'existe pas, nous pouvons écrire le script correspondant et le partager avec la communauté.
 
 - Il est construit en **Java** et est donc portable.
 
@@ -174,6 +174,8 @@ Enfin, puisqu'il s'agit d'un outil **open-source**, il est régulièrement mis �
 - Pas facile à maintenir car il tourne sur un serveur et nécessite quelques compétences en tant qu'administrateur de serveur pour **surveiller** son activité.
 
 - CI se casse régulièrement en raison de quelques petits changements de **réglage**. CI sera mis en pause et nécessite donc l'attention de l'équipe de développeurs.
+
+- Le large éventail de plugins disponibles pour Jenkins augmente les risques d'infection et de vulnérabilité.
 
 ## **F - Architecture Jenkins**
 
@@ -222,23 +224,27 @@ De cette introduction, vous remarquerez que l'usage de Jenkins n'est pas réserv
 
 ## **A - Installation de Jenkins**
 
-Jenkins est disponible à partir des référentiels **Ubuntu** et peut être installé directement à l'aide du gestionnaire de packages APT. Nous avons vu que Jenkins est développé en JAVA. Pour vérifier que Java est installé sur notre système, exécutons la commande :
+Jenkins est disponible à partir des référentiels **Ubuntu** et peut être installé directement à l'aide du gestionnaire de packages APT. Nous avons vu que Jenkins est développé en JAVA. 
+
+> Pour vérifier que Java est installé sur notre système, exécutez la commande :
 
 ```shell
 java --version
 ```
 
-Vérifions que Jenkins est bien installé sur notre système et que le service est actif :
+> Vérifiez que Jenkins est bien installé sur notre système et que le service est actif :
 
 ```shell
 sudo systemctl status jenkins
 ```
 
-<div class="alert alert-info">Vous devriez constater que Jenkins est bien en mode "running". Toutefois, nous vous avons préparé les prochaines étapes pour reproduire l'installation sur votre machine.</div>
+<div class="alert alert-info">Vous devriez constater que Jenkins est bien en mode "running". Toutefois si ce n'est pas le cas, nous vous avons préparé les prochaines étapes pour reproduire l'installation sur votre machine.</div>
 
 ### a.1 - Jenkins Master
 
-Puisque Jenkins est basé sur Java, nous devons installer **OpenJDK**. Pour cela, exécutons la commande :
+Puisque Jenkins est basé sur Java, nous devons installer **OpenJDK**. 
+
+> Pour cela, exécutez la commande :
 
 ```shell
 sudo apt install openjdk-11-jdk-headless -y
@@ -246,19 +252,17 @@ sudo apt install openjdk-11-jdk-headless -y
 
 Mettre à jour notre machine. Il est recommandé de toujours mettre à jour les packages système.
 
-Exécutons donc la commande :
+> Exécutez donc les commandes :
 
 ```shell
 sudo apt update -y
-```
 
-Exécutons ensuite :
-
-```shell
 sudo apt upgrade -y
 ```
 
-Installons à présent Jenkins. Nous ajoutons la clé du référentiel Jenkins à notre système :
+Installons à présent Jenkins. 
+
+> Ajoutez la clé du référentiel Jenkins à notre système :
 
 ```shell
 curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo tee \
@@ -278,13 +282,13 @@ sudo systemctl status jenkins
 
 À partir de la sortie, nous pouvons voir que Jenkins est opérationnel.
 
-Si Jenkins n'est pas démarré, exécutons la commande ci-dessous pour qu'il soit opérationnel :
+> Si Jenkins n'est pas démarré, exécutez la commande ci-dessous pour qu'il soit opérationnel :
 
 ```shell
 sudo systemctl start jenkins
 ```
 
-Pour activer Jenkins au démarrage, exécutons la commande :
+Pour activer Jenkins au démarrage, vous pouvez exécuter la commande :
 
 ```shell
 sudo systemctl enable --now jenkins
@@ -294,13 +298,13 @@ Jenkins démarrera désormais chaque fois que nous redémarrons ou allumons notr
 
 ## **B - Configuration de Jenkins**
 
-Connectons-nous au serveur Jenkins à l'aide de notre navigateur `http://adresseip:8080/`.
+> Connectez-vous au serveur Jenkins à l'aide de votre navigateur à l'adresse: `http://adresseip:8080/`.
 
 <div class="alert alert-info">L'interface Web Jenkins utilise la langue configurée par défaut sur le navigateur du client. Vous pouvez changer ce paramètre à tout moment. Pour simplifier la gestion de nos exercices, nous avons choisit de paramétrer notre navigateur en Anglais.</div>
 
 Nous obtiendrons la première page qui est l'écran "**Déverrouiller Jenkins**". Afin de configurer Jenkins en toute sécurité, nous devrons coller le mot de passe de l'administrateur.
 
-Nous exécuterons la commande suivante afin de révéler le mot de passe:
+> Exécuterons la commande suivante afin de révéler le mot de passe:
 
 ```shell
 sudo cat /var/lib/jenkins/secrets/initialAdminPassword
@@ -324,7 +328,7 @@ Une fois que nous avons recopié le mot de passe généré, nous arriverons sur 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/custo.png" style="width:65%">
 </p>
 
-Sélectionnons le bouton « **Install suggested plugin** »,
+> Sélectionnez le bouton « **Install suggested plugin** »,
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/install_jenkins.png" style="width:65%">
@@ -418,12 +422,11 @@ Une fois terminé, le plugin sera disponible en option lors de la configuration 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github-logo.webp" style="width:30%">
 </p>
 
+## B - Création du dépôt Github
 
-## **B - Intégration de Jenkins avec GitHub**
+Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Pour rappel, GitHub est une plateforme en ligne utilisée pour la gestion de versions et la collaboration dans le développement de logiciels. 
 
-### b.1 - Création du dépôt Github
-
-Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Nous commencerons par créer un nouveau dépôt sur notre compte Github, si vous n'en avez pas, vous pouvez en créer un à l'adresse de [GitHub](https://github.com/signup).
+Nous commencerons par créer un nouveau dépôt sur notre compte Github, si vous n'en avez pas, vous pouvez en créer un à l'adresse de [GitHub](https://github.com/signup).
 
 Nous allons donc créer un dépôt afin de pouvoir versionner notre code source et le connecter à Jenkins. Allons sur Github créer un nouveau dépôt appelé `Jenkins-datascientest`, avec une visibilité `public`:
 
@@ -431,124 +434,83 @@ Nous allons donc créer un dépôt afin de pouvoir versionner notre code source 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/repo_github.png" style="width:60%">
 </p>
 
-Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`. Une fois sur l'interface de dépôt, nous pouvons aller sur les réglages du dépôt en cliquant sur `settings`.
+Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`.
 
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/setting_github.png" style="width:100%">
-</p>
 
-### b.2 - Qu'est-ce qu'un webhook ?
+## **C - Installation de Docker**
 
-**Les Webhooks sont des notifications déclenchées par des événements**. Dans la plupart des cas, ils sont utilisés pour la communication entre les systèmes. C'est le moyen le plus simple de recevoir une alerte lorsque un évènement (tentative de connexion, mise à jour...) se passe dans un autre système.
+Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
 
-**Comment fonctionnent les Webhooks ?**
+La raison du succès de Docker est sa capacité à conteneuriser les applications. Cela réduit le temps de développement et de publication d'une solution pour une société de développement de logiciels.
 
-Lorsque nous effectuons un retrait à l'aide d'un guichet automatique, la machine vérifie notre solde et nous donne le montant que nous avons demandé. Une fois cette opération effectuée, notre solde est mis à jour et ce changement déclenche une **action**. Ensuite, un SMS est envoyé avec les détails du retrait.
+Il permet à une application de s'exécuter sur n'importe quelle application, quelles que soient les configurations d'hôte. Cela permet à toutes les équipes de collaborer tout en travaillant efficacement.
 
-C'est ainsi que fonctionnent les **Webhooks**. Une action sert de **déclencheur** à une autre action. Le reste est une architecture populaire utilisée pour communiquer entre les systèmes. Un cas d'utilisation populaire consiste à connecter des services Web tels que GitHub et Slack.
+[Docker](http://docker.com/) nous permet de rationaliser et de contrôler les modifications tout au long du cycle de développement. Nous pouvons l'utiliser tout au long des étapes de développement, de production et de publication. Si nous souhaitons revenir à une version précédente, vous pouvez le faire en utilisant Docker.
 
-Un Webhook est une **requête HTTP** qui transfère des données lorsqu'elle est déclenchée par un **événement** et transporte un **message** vers une destination telle qu'un SMS ou une alerte d'appel téléphonique.
+Nous pouvons également nous assurer qu'une fonctionnalité fonctionne dans l'environnement de production selon qu'elle est opérationnelle ou non dans l'environnement de développement.
 
-Les Webhooks sont utilisés pour les notifications en **temps réel**, afin que votre système puisse être mis à jour dès que l'événement a lieu et ainsi permettre d'avoir un suivi granulaire de vos systèmes.
+> Docker est déjà installé sur les machines virtuelles fournies, afin que Jenkins puisse piloter le `Docker` engine, nous devons ajouter l'utilisateur Jenkins au groupe Docker avec la commande suivante:
 
-En termes plus techniques, la plupart des Webhooks sont configurés en tant que points de **rappel HTTP** définis par l'utilisateur. Ils nous permettent d'enregistrer une URL `http://` ou `https://` où les données d'événements peuvent être stockées aux formats [JSON](https://en.wikipedia.org/wiki/JSON) ou [XML](https://en.wikipedia.org/wiki/XML).
+```shell
+sudo usermod -aG docker jenkins
+```
 
-Nous pourrons faire ce que nous voulons avec les données que nous récupérons et stockons à partir d'un certain événement.
-
-La mécanique de base des Webhooks consiste à envoyer une requête **HTTP** à l'URL spécifiée par l'utilisateur, ensuite, un webhook effectue un **callback HTTP** vers une URL qui doit être configurée par le système qui **reçoit** les données.
-
-Cette URL de webhook est appelée **point de terminaison** de webhook. Les points de terminaison Webhook doivent être publics pour être accessibles, et il est important que cette URL appartienne au système **récepteur**. Le rappel est déclenché chaque fois qu'il y a un événement dont vous souhaitez informer un autre système.
-
-Nous allons donc le mettre en place sur Github afin d'alerter notre instance de Jenkins.
-
-Nous pouvons à présent cliquer sur `webhooks`.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_webhook.png" style="width:100%">
-</p>
-
-Nous pouvons cliquer sur `Add Webhook`.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/add_webhook.png" style="width:100%">
-</p>
-
-Dans le formulaire, nous devons remplir le champ `Payload URL`. Nous allons donc remplir ce champ avec la combinaison suivante :
-
-- Votre url jenkins : `http://votreadesseip:8080/`
-- L'endpoint `github-webhook`
-
-Le contenu complet sera donc `http://votreadesseip:8080/github-webhook/`. Vous devrez remplacer `votreadresseip` par l'adresse IP de votre serveur.
-<div class="alert alert-warning">
-	Si vous travaillez en local et non sur la VM fournie par DataScientest et que vous ne souhaitez pas indiquer votre adresse IP personnelle, veuillez vous référérer à la partie complément de ce chapitre. 
+<div class="alert alert-info"><i class="icon circle info"></i>
+La section suivante sert pour ceux qui utilisent leurs ordinateurs personnelles. Vous pouvez le vérifier avec la commande <code>docker -v</code>
 </div>
-Pour le champ `Content type`, nous choisirons `application/json`.
 
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/payload_url.png" style="width:100%">
-</p>
-A présent nous devons configurer les évènements qui alerterons Jenkins et déclencherons nos jobs de constructions.
-
-Sur la partie `Which events would you like to trigger this webhook?`, nous choisirons `Let me select individual events` afin de choisir nous même les évènement déclencheurs.
-
-Nous cocherons les cases suivantes :
-
-- `Branch or tag creation`
-
-- `Branch or tag deletion`
-
-- `Packages`
-
-- `Pull request review comments`
-
-- `Pull requests`
-
-- `Pull request reviews`
-
-- `Pushes`
-
-- `Registry packages`
-
-Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cliquant sur le bouton `Add Webhook`.
-
-<p align="center">
-  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/kubernetes.png" style="width:60%">
-</p>
-
-### Complément
-
-Cette partie s'adresse aux personnes ne faisant pas les excercices sur la VM fournie par DataScientest.
-
-Nous ne pouvons pas donner une adresse locale comme `localhost`. Nous allons pour cela passer par un tunnel ssh `qui` va nous donner une adresse publique. Nous allons utiliser [ngrok](https://ngrok.com/), un logiciel permettant de créer des tunnels sécurisés entre un serveur local et Internet. Il agit en tant que passerelle inversée, permettant à des applications exécutées localement sur votre ordinateur de recevoir des requêtes externes. 
-
-> Téléchargez puis décompressez le fichier.
-
-> Lancez l'exécutable `ngrok` puis dans le terminal de l'application, lancez la commande suivante :
+Nous allons installer Docker à fin que Jenkins puisse être utilisé pour manipuler nos différentes images Docker. Nous installerons Docker en nous servant des commandes suivantes :
 
 ```shell
-ngrok http port-associé-à-Jenkins
+sudo apt-get install ca-certificates curl gnupg lsb-release -y
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install docker-ce docker-ce-cli containerd.io -y
+sudo systemctl enable --now docker
 ```
 
-Votre terminal devrait afficher un message similaire à l'image ci-dessous :
+Nous devons ensuite ajouter l'utilisateur Jenkins au groupe Docker afin que Jenkins puisse piloter le `Docker engine`.
+
+Nous le ferons de la façon suivante :
 
 ```shell
-ngrok by @inconshreveable                                                                                                                                                                            (Ctrl+C to quit)
-
-Session Status                online
-Session Expires               1 hour, 59 minutes
-Version                       2.3.40
-Region                        United States (us)
-Web Interface                 http://127.0.0.1:4040
-Forwarding                    http://d4b48cd1f88c.ngrok.io -> http://localhost:8080
-Forwarding                    https://d4b48cd1f88c.ngrok.io -> http://localhost:8080
-
-Connections                   ttl     opn     rt1     rt5     p50     p90
-                              0       0       0.00    0.00    0.00    0.00
+sudo usermod -aG docker jenkins
 ```
 
-> Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
+<br>
 
-## **C - Credentials**
+## **D - Docker Hub**
+
+Docker Hub est un registre Docker, une version **hébergée** dans le cloud, une application côté serveur open-source, évolutive et sans état.
+
+Il peut gérer le partage et le stockage des images Docker. À l'aide de Docker, les développeurs peuvent y accéder en tant que public et créer leur propre espace de référentiels privés et **automatiser** les fonctions personnalisées de création d'applications, les groupes de travail et les **webhooks**.
+
+Un développeur formé aux pratiques DevOps peut télécharger l'image officielle du conteneur du système de base de données orienté document MongoDB depuis Docker Hub pour s'entraîner sur une application déployée dans les conteneurs par exemple.
+
+### Fonctionnalités du hub Docker
+
+- Référentiels : il contient le processus Push et Pull pour les images de conteneurs.
+
+- Équipes et organisations : il permet au développeur/utilisateur d'accéder à des référentiels privés d'images de conteneurs.
+
+- Images officielles de **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par Docker.
+
+- Images d'éditeur vérifiées par **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par des fournisseurs externes.
+
+- **Builds** : il fournit les mécanismes qui formulent automatiquement des images de conteneur à partir de **Bitbucket** et **GitHub** et les poussent vers Docker Hub.
+
+- **Webhooks** : il déclenche certaines actions après une poussée réussie vers un conteneur pour combiner Docker Hub avec des services supplémentaires.
+
+- **Docker** implémente un outil Docker Hub CLI qui est actuellement expérimental et une API (Micro-service) qui nous permet de communiquer avec Docker Hub. Nous pouvons parcourir la documentation [de l'API Docker Hub](https://docs.docker.com/docker-hub/api/latest/) pour rechercher les points de terminaison entre accolades.
+
+Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docker.com/signup. Nous nous en servirons dans la suite de notre cours.
+
+<br>
+
+
+## **E - Credentials**
 Sur Jenkins, les credentials font référence aux informations d'identification nécessaires pour accéder à différents services, systèmes ou environnements lors de l'exécution de pipelines ou de jobs.
 
 Allons, à présent, créer nos éléments de connexion sur Jenkins. 
@@ -624,7 +586,7 @@ Nous pouvons maintenant choisir le type de credentials. Examinons les différent
 </tbody>
 </table>
 
-> Créez une variable de type `secret text` afin d'y définir le mot de passe utilisé par Jenkins pour pousser nos images au sein de Dockerhub. Nous appellerons cette variable `DOCKER_HUB_PASS`:
+> Créez une variable de type `Nom d'utilisateur et mot de passe` afin d'y définir le mot de passe utilisé par Jenkins pour pousser nos images au sein de Dockerhub. Nous mettrons dans ID: `DOCKER_HUB_PASS`
 
 <div class="alert alert-info"><i class="icon circle info"></i>
 Dans <code>secret</code> il faudra renseigner le mot de passe de votre compte dockerHub
@@ -640,78 +602,6 @@ Ceci sera la liste de nos informations secretes :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/variables_list.png" style="width:100%">
 </p>
 
-
-## **D - Installation de Docker**
-
-Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
-
-La raison du succès de Docker dans l'environnement DevOps est sa capacité à conteneuriser les applications. Cela réduit le temps de développement et de publication d'une solution pour une société de développement de logiciels.
-
-Il permet à une application de s'exécuter sur n'importe quelle application, quelles que soient les configurations d'hôte. Cela permet à toutes les équipes de collaborer tout en travaillant efficacement.
-
-[Docker](http://docker.com/) nous permet de rationaliser et de contrôler les modifications tout au long du cycle de développement. Nous pouvons l'utiliser tout au long des étapes de développement, de production et de publication. Si nous souhaitons revenir à une version précédente, vous pouvez le faire en utilisant Docker.
-
-Nous pouvons également nous assurer qu'une fonctionnalité fonctionne dans l'environnement de production selon qu'elle est opérationnelle ou non dans l'environnement de développement.
-
-Docker est déjà installé sur les machines virtuelles fournies, afin que Jenkins puisse piloter le `Docker` engine, nous devons ajouter l'utilisateur Jenkins au groupe Docker avec la commande suivante:
-
-```shell
-sudo usermod -aG docker jenkins
-```
-
-<div class="alert alert-info"><i class="icon circle info"></i>
-La section suivante sert pour ceux qui utilisent leurs ordinateurs personnelles. Vous pouvez le vérifier avec la commande <code>docker -v</code>
-</div>
-
-Nous allons installer Docker à fin que Jenkins puisse être utilisé pour manipuler nos différentes images Docker. Nous installerons Docker en nous servant des commandes suivantes :
-
-```shell
-sudo apt-get install ca-certificates curl gnupg lsb-release -y
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update -y
-sudo apt-get install docker-ce docker-ce-cli containerd.io -y
-sudo systemctl enable --now docker
-```
-
-Nous devons ensuite ajouter l'utilisateur Jenkins au groupe Docker afin que Jenkins puisse piloter le `Docker engine`.
-
-Nous le ferons de la façon suivante :
-
-```shell
-sudo usermod -aG docker jenkins
-```
-
-<br>
-
-## **E - Docker Hub**
-
-Docker Hub est un registre Docker, une version **hébergée** dans le cloud, une application côté serveur open-source, évolutive et sans état.
-
-Il peut gérer le partage et le stockage des images Docker. À l'aide de Docker, les développeurs peuvent y accéder en tant que public et créer leur propre espace de référentiels privés et **automatiser** les fonctions personnalisées de création d'applications, les groupes de travail et les **webhooks**.
-
-Un développeur formé aux pratiques DevOps peut télécharger l'image officielle du conteneur du système de base de données orienté document MongoDB depuis Docker Hub pour s'entraîner sur une application déployée dans les conteneurs par exemple.
-
-### e.1 - Fonctionnalités du hub Docker
-
-- Référentiels : il contient le processus Push et Pull pour les images de conteneurs.
-
-- Équipes et organisations : il permet au développeur/utilisateur d'accéder à des référentiels privés d'images de conteneurs.
-
-- Images officielles de **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par Docker.
-
-- Images d'éditeur vérifiées par **Docker** : il extrait et utilise des images de conteneurs de haute qualité rendues par des fournisseurs externes.
-
-- **Builds** : il fournit les mécanismes qui formulent automatiquement des images de conteneur à partir de **Bitbucket** et **GitHub** et les poussent vers Docker Hub.
-
-- **Webhooks** : il déclenche certaines actions après une poussée réussie vers un conteneur pour combiner Docker Hub avec des services supplémentaires.
-
-- **Docker** implémente un outil Docker Hub CLI qui est actuellement expérimental et une API (Micro-service) qui nous permet de communiquer avec Docker Hub. Nous pouvons parcourir la documentation [de l'API Docker Hub](https://docs.docker.com/docker-hub/api/latest/) pour rechercher les points de terminaison entre accolades.
-
-Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docker.com/signup. Nous nous en servirons dans la suite de notre cours.
-
-<br>
 
 
 #%%
@@ -782,7 +672,9 @@ Examinons brièvement les différents types de job à Jenkins :
 
 Nous allons nous lancer enfin dans la pratique de Jenkins en affichant le classique `Hello World`.
 
-Pour cela, cliquez sur "Nouveau Item" (_New Item_) qui est la première option du dashboard. Donnez un nom à votre projet, puis sélectionnez l'option "Construire un projet free-style" (_Freestyle project_) et appuyez sur le bouton OK.
+Pour cela, cliquez sur `Nouveau Item` (*New Item*) qui est la première option du dashboard. 
+
+Donnez un nom à votre projet, puis sélectionnez l'option `Construire un projet free-style` (*Freestyle project*) et appuyez sur le bouton `OK`.
 
 Vous devriez obtenir la page suivante :
 
@@ -790,45 +682,64 @@ Vous devriez obtenir la page suivante :
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/desc_projet.png" style="width:75%">
 </p>
 
-Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le _Source Code Management_ , automatiser les _build_ du projet et réaliser des actions selon si le build a été un succès ou un échec.
+Vous disposez de plusieurs onglets, qui vous renvoient à la section associée et vous permettent de configurer votre projet Jenkins. 
+
+Vous pouvez ajouter une simple description, l'associer avec un repo Git avec le `Source Code Management` , automatiser les `build` du projet et réaliser des actions selon si le build a été un succès ou un échec.
 
 <div class="alert alert-info"><i class="icon circle info"></i>
 Si vous observez bien, vous apercevez un point d'interrogation à la droite de chaque proposition, qui comme attendu fournit une explication, n'hésitez pas à les consulter.
 </div>
 
-Ici, nous voulons simplement afficher un _Hello World_ , pour cela nous allons sur la section _Build_, qui va retranscrire les actions que nous voulons faire. Nous choisissons l'action depuis le bouton _Add build step_. Nous avons plusieurs options, dans notre cas, nous prenons _Execute shell_.
+Ici, nous voulons simplement afficher un Hello World, pour cela nous allons sur la section `Build Steps`, qui va retranscrire les actions que nous voulons faire. 
+
+Nous choisissons l'action depuis le bouton `Add build step`. 
+Nous avons plusieurs options, dans notre cas, nous prenons `Execute shell`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/build_2.png" style="width:75%">
 </p>
 
-Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée. Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton _Add build step_.
+Comme nous le montre l'image, il suffit d'écrire ce que nous aurions écrit dans la console, il est aussi possible d'écrire d'autres commandes telles que `java -version` qui nous renseigne sur la version de java utilisée.
+
+> Coller les commandes suivantes:
+```shell
+echo 'Hello World'
+java -version
+``` 
+
+Il est possible aussi de rajouter des blocs build supplémentaires à l'aide du bouton `Add build step`.
 
 <div class="alert alert-info">
 <i class="fa fa-info-circle"></i>
 Des variables d'environnement sont aussi disponibles depuis la route /env-vars.html/, vous pouvez les utiliser pour vos scripts et les afficher via un <code>echo</code>.
 </div>
 
-Une fois cela fait, cliquez sur le bouton Save et cela vous renvoie à la page principale du projet.
+Une fois cela fait, cliquez sur le bouton `Save` et cela vous renvoie à la page principale du projet.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/page_garde.png" style="width:65%">
 </p>
 
-Sur le Dashboard à votre gauche, cliquez sur le bouton "Lancer un Build" (_Build Now_), cela va exécuter les actions que vous avez définies dans le _Add Build Step_. En dessous du Dashboard se trouve une section _Build History_ qui est un historique des Build. Une fois, le job lancé, vous devrez pouvoir observer un #1 associé avec un tick vert entouré, si le build avait échoué, nous aurions eu une croix rouge entouré. En cliquant sur le #1, cela vous renvoie aux informations relatives au build.
+Sur le Dashboard à votre gauche, cliquez sur le bouton `Lancer un Build` (*Build Now*), cela va exécuter les actions que vous avez définies dans le `Add Build Step`. 
+
+En dessous du Dashboard se trouve une section `Build History` qui est un historique des Build. Une fois, le job lancé, vous devriez pouvoir observer un `#1` associé avec un tick vert entouré. Si le build avait échoué, nous aurions eu une croix rouge entouré.
+
+En cliquant sur le `#1`, nous aurons accès aux informations relatives au build.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/after_build1.png" style="width:65%">
 </p>
 
-Sur cette nouvelle page, le dashboard est différent et il y apparaît un onglet _Console Output_, où se trouve les sorties des actions demandées, nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
+Sur cette nouvelle page, nous avons onglet `Console Output`, où se trouve les sorties des actions demandées: nous obtenons un Hello World couplé avec la version de Java utilisée par Jenkins.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/resultat.png" style="width:65%">
 </p>
 
 <div class="alert alert-info"><i class="icon circle info"></i>
-Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
+Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lignes de commandes dont vous pouvez retrouver l'utilisation depuis la route <code>/cli</code>. 
+
+Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes, mais moins facile d'accès que depuis l'interface web. Pour pouvoir utiliser ces lignes de commandes, vous devez installer le langage Java.
 </div>
 
 #%%
@@ -836,13 +747,16 @@ Jenkins n'est pas utilisable que depuis son interface web. Il y a aussi des lign
 ## **V - Pipeline Jenkins**
 
 <br>
-Précédemment, nous avons vu la fonctionnalité Freestyle Project nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
+Précédemment, nous avons vu la fonctionnalité *Freestyle Project* nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
 
 Nous avions explicité l'intérêt d'utiliser Jenkins par la possibilité d'automatiser certaines étapes dans la mise en production d'un logiciel. L'ensemble des étapes de cette mise en production constitue le pipeline de notre projet. Le pipeline dépend de vos projets les étapes peuvent être différentes.
 
-Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub dans lequel nous avons ajouté le webhook lors du chapitre précédent. Nous allons ajouter les fichiers suivant pour simuler le déploiement d'une API comme vous pourriez le faire en entreprise.
+Afin de pouvoir utiliser les fonctionnalités de Jenkins, nous allons reprendre le dépot GitHub crée précédemment. Nous allons ajouter les fichiers suivant pour simuler le déploiement d'une API puis grâce à Jenkins, faire un pipeline qui va automatiser chaque étapes de ce déploiement. 
 
-> Dans un fichier nommé `app.py`, nous allons le code ci-dessous qui va créer une API Flask avec plusieurs routes.
+Les fichiers suivants sont à mettre sur votre repository github.
+
+> Dans un fichier nommé `app.py`, nous allons coller le code ci-dessous qui va créer une API Flask avec plusieurs routes.
+
 ```python
 ##########################################################################
 ## Imports
@@ -865,10 +779,6 @@ app = Flask(__name__)
 ##########################################################################
 ## Routes
 ##########################################################################
-
-@app.route("/")
-def home():
-    return render_template("home.html")
 
 @app.route("/api/hello")
 def hello():
@@ -913,7 +823,9 @@ def whoami_name(name):
 if __name__ == '__main__':
     app.run()
 ```
+
 > Créez un fichier `test_main.py` qui va contenir les tests unitaires de notre API:
+
 ```python
 import unittest
 from app import app
@@ -922,10 +834,6 @@ class FlaskTestCase(unittest.TestCase):
 
     def setUp(self):
         self.app = app.test_client()
-
-    def test_home(self):
-        response = self.app.get('/')
-        self.assertEqual(response.status_code, 200)
 
     def test_hello(self):
         response = self.app.get('/api/hello')
@@ -941,14 +849,16 @@ if __name__ == '__main__':
     unittest.main()
 ```
 
-> Dans un fichier nommé `requirements.txt`, ajoutez les librairies nécessaire pour le fonctionnement de l'API ainsi que des tests unitaires: 
-```
+> Dans un fichier nommé `requirements.txt`, ajoutez les librairies nécessaires pour le fonctionnement de l'API ainsi que des tests unitaires: 
+
+```txt
 flask
 unittest
 ```
 
 > Enfin nous allons contenairiser notre API avec Docker avec le `Dockerfile` ci-dessous:
-```
+
+```shell
 # Dockerfile to build a flask app
 
 FROM python:3.8-slim-buster
@@ -960,7 +870,7 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "-m" , "flask", "run"]
+CMD ["python", "-m" , "flask", "run"]
 ```
 
 Nous allons retrouver dans ce dépôt notre API, un fichier de tests unitaires, un fichier listant les librairies à installer et un fichier DockerFile. Maintenant que notre API est prête, nous allons pouvoir faire un pipeline composée de plusieurs phases qui va contruire l'API, la tester et la déployer.
@@ -1043,11 +953,11 @@ Un pipeline scripté simple pourrait ressembler à la syntaxe suivante :
 
 ```shell
 node {
-     	stage('Greeting')
-     		{
-     		echo 'hello Datascientest'
-         	}
-       }
+  stage('Greeting')
+    {
+      echo 'hello Datascientest'
+    }
+}
 ```
 
 <br>
@@ -1064,11 +974,11 @@ Le sous-système **déclaratif** de Pipeline dans Jenkins Pipeline est relativem
 
 ```shell
 pipeline {
-    stages {
-     	stage('Greeting'){
-     	    echo 'hello Datascientest'
- 	}
+  stages {
+    stage('Greeting'){
+      echo 'hello Datascientest'
     }
+  }
 }
 ```
 
@@ -1082,7 +992,7 @@ Nous allons, dès à présent, créer un pipeline déclaratif qui va être compo
 
 Nous devons donner un nom à notre projet et ensuite choisir un type de projet.
 
-> Donnez le nom `datascientest-ci-cd` à votre projet et sélectionner le type de projet `Pipeline` car nous partirons de notre fichier Jenkinsfile afin de décrire les tâches à automatiser :
+> Donnez le nom `datascientest_ci_cd` à votre projet et sélectionner le type de projet `Pipeline` car nous partirons de notre fichier Jenkinsfile afin de décrire les tâches à automatiser :
 
 
 <p align="center">
@@ -1256,6 +1166,9 @@ Nous allons contruire ensemble un pipeline Jenkins qui va automatiser les étape
 
 Le premier bloc d'un pipeline commence toujours par `pipeline`. Si vous écrivez hors de ce bloc, cela générera une erreur. Ensuite, 2 éléments interviennent. Le premier est `agent`, qui va préciser où Jenkins va exécuter les différentes étapes du pipeline. 
 
+
+
+
 ### e.1 - Agent
 
 Jenkins offre la possibilité d'effectuer des builds distribués en les déléguant à des nœuds "agents". Cela vous permet d'exécuter plusieurs projets avec une seule instance du serveur Jenkins, tandis que la **charge de travail** est distribuée à ses **agents**. Les détails sur la configuration d'un mode maître/agent sortent du cadre de ce cours.
@@ -1298,17 +1211,18 @@ Mais aussi un **"et"** : `agent { label 'datascientest1 || datascientest2' }` en
 
 - `docker` : Exécute le pipeline, ou l'étape, avec le conteneur donné qui sera provisionné dynamiquement.
 
+Voici un exemple d'agent:
 ```shell
 agent {
-    docker {
-        image 'gradle:6.9-alpine'
-        label 'datascientest-gradle'
-        args  '-v /tmp:/tmp'
-    }
+  docker {
+    image 'gradle:6.9-alpine'
+    label 'datascientest-gradle'
+    args  '-v /tmp:/tmp'
+  }
 }
 ```
 
-> Nous allons maintenant mettre en place notre pipeline pour automatiser tout le déploiement de notre projet. Créer dans votre fichier `Jenkinsfile` une section `pipeline` puis ajoutez un `agent` de type `any` à votre pipeline
+> Nous allons maintenant mettre en place notre pipeline pour automatiser tout le déploiement de notre projet. Créez dans votre fichier `Jenkinsfile` une section `pipeline` puis ajoutez un `agent` de type `any` dans votre pipeline
 
 %%SOLUTION%%
 
@@ -1333,6 +1247,7 @@ Cette directive prend en charge une méthode d'assistance spéciale `credentials
 
 Pour l'appel des variables dans le code du Jenkinsfile, nous devrons y ajouter le préfixe `$` juste avant le nom de la variable.
 
+
 ```groovy
 // at the pipeline and stage level
 pipeline {
@@ -1353,36 +1268,24 @@ pipeline {
 }
 ```
 
-Au niveau `pipeline` uniquement :
+La déclaration des variables d'environnement peuvent se faire sur l'entièreté du `pipeline` ou au niveau d'un stage :
 
 ```groovy
 pipeline {
 	agent any
+  // au niveau de la pipeline
 	environment {
 		OUTPUT_PATH = './outputs/'
 	}
 	stages {
 		stage ('build') {
+      // au niveau d'un stage
+      environment {
+		    OUTPUT_PATH = './outputs/'
+	    }
 			...
 		}
 	...
-	}
-}
-```
-
-Ici, `environment` est utilisé à un niveau d'un `stage` uniquement :
-
-```groovy
-pipeline {
-	agent any
-	stages {
-		stage ('build') {
-	environment {
-		OUTPUT_PATH = './outputs/'
-	}
-	...
-		}
-		...
 	}
 }
 ```
@@ -1484,7 +1387,7 @@ Le fichier Jenkinsfile prend en charge le remplacement des variables d'environne
 
 - L'affectation impérative `env.VAR = "value"` ne peut remplacer que les variables d'environnement créées à l'aide de l'affectation impérative.
 
-Nous pouvons mettre en avant les trois cas dans le fichier suivant :
+Nous pouvons mettre en avant les trois cas dans le pipeline suivant :
 
 ```groovy
 pipeline {
@@ -1535,8 +1438,8 @@ pipeline {
     }
 }
 ```
-> À nouveau dans votre fichier `Jenkinsfile`, ajoutez dans une section `environment`, les une variable d'environnement suivantes
-> - `DOCKER_ID` qui va contenir votre identifiant/pseudonyme de votre compte Dockerhub
+> À nouveau dans votre fichier `Jenkinsfile`, ajoutez dans une section `environment`, les variables d'environnement suivantes que nous utiliserons plus tard:
+> - `DOCKER_ID` qui va contenir le pseudonyme de votre compte Dockerhub que nous avons créée dans la partie `Credentials`
 > - `DOCKER_IMAGE` qui va contenir le nom de l'image docker que vous nommerez `datascientestapi`
 > - `DOCKER_TAG` qui va prendre comme valeur `v.${BUILD_ID}.0` permettant d'incrémenter la valeur de 1 à chaque nouvelle construction
 
@@ -1544,12 +1447,12 @@ pipeline {
 
 ```groovy
 pipeline {
-    agent any
-    environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
-    }
+  agent any
+  environment { 
+    DOCKER_ID = "dstdockerhub"
+    DOCKER_IMAGE = "datascientestapi"
+    DOCKER_TAG = "v.${BUILD_ID}.0" 
+  }
 }
 ```
 %%SOLUTION%%
@@ -1568,6 +1471,7 @@ Jenkins divise graphiquement l'exécution du pipeline en fonction des étapes d�
 
 En pratique, tout le travail réel effectué par un Pipeline sera enveloppé dans une ou plusieurs directives `stage`.
 
+Voici un exemple d'architecture d'un pipeline avec des stages:
 ```groovy
 pipeline {
 	agent any
@@ -1618,7 +1522,7 @@ pipeline {
         stage('Testing') {
 
         }
-	stage('Deploying') {
+	      stage('Deploying') {
 
         }
     }
@@ -1632,6 +1536,8 @@ pipeline {
 ### e.5 - Steps
 
 Il s'agit d'une séquence d'une ou plusieurs directives d'étape, la section `stages` est l'endroit où se situera l'essentiel du job décrit par un Pipeline. Au minimum, il est recommandé de contenir au moins une directive `steps` pour chaque partie distincte du processus de livraison continue, telle que `Build`, `Test` et `Deploy`.
+
+Voici un exemple de `steps` dans un pipeline Jenkins
 
 ```groovy
 pipeline {
@@ -1670,9 +1576,15 @@ steps {
 
 <br>
 
-> En ajoutant une section `steps` dans chacune des trois stages, effectuez les commandes suivantes:
+> En ajoutant une directive `steps` dans chacune des trois stages, effectuez les commandes suivantes:
 > - Dans la phase `Building`, vous devez installer les librairies contenues dans le fichier `requirements.txt`
+```shell
+pip install -r requirements.txt
+```
 > - Dans la phase `Testing`, vous devez lancer les tests unitaires
+```shell
+python -m unittest
+```
 
 %%SOLUTION%%
 
@@ -1687,15 +1599,15 @@ pipeline {
     stages {
         stage('Building') {
             steps {
-	    	sh 'pip install -r requirements.txt'
+	    	      sh 'pip install -r requirements.txt'
             }
         }
         stage('Testing') {
             steps {
-	    	sh 'python -m unittest'
+	    	      sh 'python -m unittest'
             }
         }
-	stage('Deploying') {
+	      stage('Deploying') {
             steps{
 
             }
@@ -1734,8 +1646,18 @@ pipeline {
 }
 ```
 
-> - Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile. Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api
-> - Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
+> * Dans la phase `Deploying`, faites une section `script` dans lequel vous allez créer une image Docker à partir du Dockerfile. Vous allez devoir utiliser les variables implémentées un peu plus tôt et suivre cette nomenclature: pseudo_dockerhub/nom_image:version_api.
+```shell
+docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+```
+> * Lancez le conteneur Docker avec le nom `jenkins` sur le port `8000`. Faites attention à ce que le port soit libre.
+```shell
+docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+```
+> * Pour éviter tous conflits de port avec les conteneurs Docker lorsque le pipeline se relance, ajoutez la commande suivante avant la création de l'image.
+```shell
+docker rm -f jenkins
+```
 
 %%SOLUTION%%
 
@@ -1743,30 +1665,31 @@ pipeline {
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
             steps {
-	    	sh 'pip install -r requirements.txt'
+	    	      sh 'pip install -r requirements.txt'
             }
         }
         stage('Testing') {
             steps {
-	    	sh 'python -m unittest'
+	    	      sh 'python -m unittest'
             }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
-            }
+	      stage('Deploying') {
+          steps{
+	    	    script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
+		        }
+          }
         }
     }
 }
@@ -1805,14 +1728,14 @@ cron('0 */4 * * 1-5')
 
 ```groovy
 pipeline {
-agent any
-triggers {
-	//Query the source code repository on weekdays every four hours starting at minute 0
-pollSCM('0 */4 * * 1-5')
-}
-stages {
-...
-}
+  agent any
+  triggers {
+    //Query the source code repository on weekdays every four hours starting at minute 0
+    pollSCM('0 */4 * * 1-5')
+  }
+  stages {
+    ...
+  }
 }
 ```
 
@@ -1880,39 +1803,40 @@ pipeline {
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
             steps {
-	    	sh 'pip install -r requirements.txt'
+	    	      sh 'pip install -r requirements.txt'
             }
         }
         stage('Testing') {
             steps {
-	    	sh 'python -m unittest'
+	    	      sh 'python -m unittest'
             }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
+        stage('Deploying') {
+          steps{
+            script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
             }
+          }
         }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
-	    }
-	}
+        stage('User Acceptance') {
+          steps{
+            input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
+          }
+        }
     }
 }
 ```
@@ -1967,10 +1891,10 @@ Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles 
 
 
 > Créez un nouveau stage `Pushing and Merging` regroupant les deux stages suivantes qui seront exécutés en parallèle:
-> - Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
-> - - Créez un section `environment` propre à ce stage qui va contenir une variable nommée `DOCKERHUB_CREDENTIALS` qui va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction credentials() qui prend en entrée l'id du credentials jenkins.
-> - - Vous devez vous connecter à dockerhub à partir de Jenkins grâce à la commande suivante: `echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin`
-> - Un stage `Merging` dan lequel on va devoir merge la branche developing de votre dépot GitHub à notre branche main. Faites attention à toutes les étapes pour le merging des deux branches.
+> * Un stage `Pushing` qui va push l'image Docker sur votre compte dockerhub
+> * * Créez une section `environment` propre à ce stage qui va contenir une variable nommée `DOCKERHUB_CREDENTIALS`. Elle va prendre en valeur les identifiants dockerhub que nous avons créé précédemment dans les credentials. Ces informations peuvent être retrouver grâce à la fonction credentials() qui prend en entrée, l'id du credentials jenkins.
+> * * Vous devez vous connecter à dockerhub à partir de Jenkins grâce à la commande suivante: `echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin`
+> * Un stage `Merging` dans lequel nous allons mettre un simple `echo 'Merging done'`. Modifier des branches directement sur le dépot Github nécessite plus de manipulation que nous verrons dans la partie `Compléments`. 
 
 %%SOLUTION%%
 
@@ -1978,62 +1902,58 @@ Certaines restrictions s'appliquent lors de l'utilisation d'étapes parallèles 
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
+          steps {
+	    	    sh 'pip install -r requirements.txt'
+          }
         }
         stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
+          steps {
+	    	    sh 'python -m unittest'
+          }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
+	      stage('Deploying') {
+          steps{
+            script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
             }
+          }
         }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
+	      stage('User Acceptance') {
+	        steps{
+		        input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
+	        }
+	      }
+	      stage('Pushing and Merging'){
+	        parallel {
+		        stage('Pushing Image') {
+		          environment {
+			          DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		          }
+		          steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			          sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		          }
+		        }
+            stage('Merging') {
+              steps {
+                echo 'Merging done'
+              }
+            }
+	      }
 	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
     }
 }
 ```
@@ -2106,67 +2026,63 @@ pipeline {
 pipeline {
     agent any
     environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
+      DOCKER_ID = "dstdockerhub"
+      DOCKER_IMAGE = "datascientestapi"
+      DOCKER_TAG = "v.${BUILD_ID}.0" 
     }
     stages {
         stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
+          steps {
+	    	    sh 'pip install -r requirements.txt'
+          }
         }
         stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
+          steps {
+	    	    sh 'python -m unittest'
+          }
         }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
+	      stage('Deploying') {
+          steps{
+            script {
+              sh '''
+              docker rm -f jenkins
+              docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
+              docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
+              '''
             }
+          }
         }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
+	      stage('User Acceptance') {
+	        steps{
+		        input {
+              message "Proceed to push to main"
+              ok "Yes"
+            }    
+	        }
+	      }
+	      stage('Pushing and Merging'){
+	        parallel {
+		        stage('Pushing Image') {
+		          environment {
+			          DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
+		          }
+		          steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+			          sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
+		          }
+		        }
+            stage('Merging') {
+              steps {
+                echo 'Merging done'
+              }
+            }
+	      }
 	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
     }
     post {
-        always {
-            sh 'docker logout'
-        }
+      always {
+        sh 'docker logout'
+      }
     }
 }
 ```
@@ -2245,84 +2161,28 @@ pipeline {
 }
 ```
 
-> Ajoutez au stage `Merging`, la condition de ne merge que la branche `development` avec la branche `main`
-
-%%SOLUTION%%
-
-```groovy
-pipeline {
-    agent any
-    environment { 
-	DOCKER_ID = "dstdockerhub"
-	DOCKER_IMAGE = "datascientestapi"
-	DOCKER_TAG = "v.${BUILD_ID}.0" 
-    }
-    stages {
-        stage('Building') {
-            steps {
-	    	sh 'pip install -r requirements.txt'
-            }
-        }
-        stage('Testing') {
-            steps {
-	    	sh 'python -m unittest'
-            }
-        }
-	stage('Deploying') {
-            steps{
-	    	script {
-		sh '''
-		docker build -t $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG .
-		docker run -d -p 8000:8000 --name jenkins $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG
-		'''
-		}
-            }
-        }
-	stage('User Acceptance') {
-	    steps{
-		input {
-                	message "Proceed to push to main"
-                	ok "Yes"
-            	}    
-	    }
-	}
-	stage('Pushing and Merging'){
-	    parallel {
-		stage('Pushing Image') {
-		   environment {
-			DOCKERHUB_CREDENTIALS = credentials('docker_jenkins')
-		    }
-		    steps {
-			sh 'docker push $DOCKER_ID/$DOCKER_IMAGE:$DOCKER_TAG'
-		    }
-		}
-		stage('Merging') {
-		    when {
-			branch 'development'
-		    }
-		    steps {
-			script {
-			sh '''
-			git checkout main
-			git merge origin/staging
-			git push -f origin main
-			'''
-			}
-		    }
-		}
-	    }
-	}
-    }
-    post {
-        always {
-            sh 'docker logout'
-        }
-    }
-}
-```
-%%SOLUTION%%
-
 Nous avons maintenant fini notre pipeline!
+
+Vous pouvez cliquez ensuite sur le bouton `Build Now` sur le dashboard de gauche, vous obtenez l'image suivante.
+
+#TODO: Ajouter l'image
+
+Vous pouvez observer le succès ou l'échec des différentes étapes depuis la `Stage View` et le temps imparti pour réaliser l'étape. La couleur verte indique bien sûr que c'est un succès, et le rouge un echec. 
+
+Nous pouvons voir aussi le déroulé des actions de notre étape en allant sur le *Build#1* comme avec un Freestyle Project, l'option `Console Output` apparaîtra sur le dashboard. 
+
+Il est possible aussi de voir les résultats depuis le Stage View en cliquant sur le rectangle vert, une option pour voir les logs apparaîtra ou sinon en allant dans la page de garde du *Build#1* accessible en cliquant sur le `#1`. 
+
+Nous allons maintenant voir comment gérer les erreurs. Pour cela nous allons simuler une faute de frappe en changeant la step du stage `Merging` par: 
+```shell
+echoo 'Merging done'
+```
+
+En cliquant à nouveau sur le bouton `Build Now`, nous obtenons cela :
+
+#TODO: Ajouter l'image
+
+Comme prévu, nous obtenons une erreur. En affichant les logs, nous voyons quelle partie de l'étape Merging n'a pas fonctionné. En se concentrant sur la première erreur, nous observons que `echoo` n'existe pas, en effet nous avons mal écrit la commande. Vous pouvez, dès à présent, corriger l'erreur.
 
 Les erreurs de syntaxe des pipelines **déclaratifs** sont signalées dès le début de l'exécution. C'est une fonctionnalité intéressante car vous ne perdrez pas de temps jusqu'à ce qu'une étape ne réalise pas qu'il y a une faute de frappe ou une faute d'orthographe.
 
@@ -2413,6 +2273,171 @@ Une fois terminé, nous avons une interface qui nous montre que tout est Ok.
 </p>
 
 #%%
+
+# VII - Compléments
+
+## **A - Les Webhooks Github**
+
+**Les Webhooks sont des notifications déclenchées par des événements**. Dans la plupart des cas, ils sont utilisés pour la communication entre les systèmes. C'est le moyen le plus simple de recevoir une alerte lorsque un évènement (tentative de connexion, mise à jour...) se passe dans un autre système.
+
+**Comment fonctionnent les Webhooks ?**
+
+Lorsque nous effectuons un retrait à l'aide d'un guichet automatique, la machine vérifie notre solde et nous donne le montant que nous avons demandé. Une fois cette opération effectuée, notre solde est mis à jour et ce changement déclenche une **action**. Ensuite, un SMS est envoyé avec les détails du retrait.
+
+C'est ainsi que fonctionnent les **Webhooks**. Une action sert de **déclencheur** à une autre action. Le reste est une architecture populaire utilisée pour communiquer entre les systèmes. Un cas d'utilisation populaire consiste à connecter des services Web tels que GitHub et Slack.
+
+Un Webhook est une **requête HTTP** qui transfère des données lorsqu'elle est déclenchée par un **événement** et transporte un **message** vers une destination telle qu'un SMS ou une alerte d'appel téléphonique.
+
+Les Webhooks sont utilisés pour les notifications en **temps réel**, afin que votre système puisse être mis à jour dès que l'événement a lieu et ainsi permettre d'avoir un suivi granulaire de vos systèmes.
+
+En termes plus techniques, la plupart des Webhooks sont configurés en tant que points de **rappel HTTP** définis par l'utilisateur. Ils nous permettent d'enregistrer une URL `http://` ou `https://` où les données d'événements peuvent être stockées aux formats [JSON](https://en.wikipedia.org/wiki/JSON) ou [XML](https://en.wikipedia.org/wiki/XML).
+
+Nous pourrons faire ce que nous voulons avec les données que nous récupérons et stockons à partir d'un certain événement.
+
+La mécanique de base des Webhooks consiste à envoyer une requête **HTTP** à l'URL spécifiée par l'utilisateur, ensuite, un webhook effectue un **callback HTTP** vers une URL qui doit être configurée par le système qui **reçoit** les données.
+
+Cette URL de webhook est appelée **point de terminaison** de webhook. Les points de terminaison Webhook doivent être publics pour être accessibles, et il est important que cette URL appartienne au système **récepteur**. Le rappel est déclenché chaque fois qu'il y a un événement dont vous souhaitez informer un autre système.
+
+Nous allons donc le mettre en place sur Github afin d'alerter notre instance de Jenkins.
+
+Sur votre dépot github, nous pouvons aller sur les réglages du dépôt en cliquant sur `settings`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/setting_github.png" style="width:100%">
+</p>
+
+
+Nous pouvons à présent cliquer sur `webhooks`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github_webhook.png" style="width:100%">
+</p>
+
+Nous cliquerons sur `Add Webhook`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/add_webhook.png" style="width:100%">
+</p>
+
+Dans le formulaire, nous devons remplir le champ `Payload URL`. Nous allons donc remplir ce champ avec la combinaison suivante :
+
+- Votre url jenkins : `http://votreadesseip:8080/`
+- L'endpoint `github-webhook`
+
+Le contenu complet sera donc `http://votreadesseip:8080/github-webhook/`. Vous devrez remplacer `votreadresseip` par l'adresse IP de votre serveur.
+<div class="alert alert-warning">
+	Si vous travaillez en local et non sur la VM fournie par DataScientest et que vous ne souhaitez pas indiquer votre adresse IP personnelle, veuillez vous référérer à la partie complément de ce chapitre. 
+</div>
+Pour le champ `Content type`, nous choisirons `application/json`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/payload_url.png" style="width:100%">
+</p>
+A présent nous devons configurer les évènements qui alerterons Jenkins et déclencherons nos jobs de constructions.
+
+Sur la partie `Which events would you like to trigger this webhook?`, nous choisirons `Let me select individual events` afin de choisir nous même les évènement déclencheurs.
+
+Nous cocherons les cases suivantes :
+
+- `Branch or tag creation`
+
+- `Branch or tag deletion`
+
+- `Packages`
+
+- `Pull request review comments`
+
+- `Pull requests`
+
+- `Pull request reviews`
+
+- `Pushes`
+
+- `Registry packages`
+
+Une fois toutes ces cases cochées, nous pouvons enregistrer notre Webhook en cliquant sur le bouton `Add Webhook`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/kubernetes.png" style="width:60%">
+</p>
+
+### Complément
+
+Cette partie s'adresse aux personnes ne faisant pas les excercices sur la VM fournie par DataScientest.
+
+Nous ne pouvons pas donner une adresse locale comme `localhost`. Nous allons pour cela passer par un tunnel ssh `qui` va nous donner une adresse publique. Nous allons utiliser [ngrok](https://ngrok.com/), un logiciel permettant de créer des tunnels sécurisés entre un serveur local et Internet. Il agit en tant que passerelle inversée, permettant à des applications exécutées localement sur votre ordinateur de recevoir des requêtes externes. 
+
+> Téléchargez puis décompressez le fichier.
+
+> Lancez l'exécutable `ngrok` puis dans le terminal de l'application, lancez la commande suivante :
+
+```shell
+ngrok http port-associé-à-Jenkins
+```
+
+Votre terminal devrait afficher un message similaire à l'image ci-dessous :
+
+```shell
+ngrok by @inconshreveable                                                                                                                                                                            (Ctrl+C to quit)
+
+Session Status                online
+Session Expires               1 hour, 59 minutes
+Version                       2.3.40
+Region                        United States (us)
+Web Interface                 http://127.0.0.1:4040
+Forwarding                    http://d4b48cd1f88c.ngrok.io -> http://localhost:8080
+Forwarding                    https://d4b48cd1f88c.ngrok.io -> http://localhost:8080
+
+Connections                   ttl     opn     rt1     rt5     p50     p90
+                              0       0       0.00    0.00    0.00    0.00
+```
+
+> Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
+
+## **B Travailler sur plusieurs branches**
+
+l arrive très souvent que vous travaillez sur plusieurs branches sur un dépôt Git, mais cela serait chronophage si vous devez réaliser un `Pipeline` pour chaque branche.
+Heureusement, il existe l'option `Multibranch Pipeline`. Comme son nom l'indique, il s'agit d'un pipeline avec plusieurs branches.
+
+Tout d'abord, nous allons créer une nouvelle branche sur notre projet. Rendez-vous sur Github et écrivez le nom de votre nouvelle branche après avoir cliqué sur `main`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/creer_branche.png" style="width:75%">
+</p>
+
+Dans chacune de vos branches, se trouve un `Jenkinsfile`.
+
+> Rajoutez un `Stage` _Branche_ comportant un simple `echo nom-de-la-branche` sur les `Jenkinsfile` de chaque branche.
+
+%%SOLUTION%%
+
+```shell
+        stage('Branch') {
+            agent any
+            steps {
+                echo 'nom-de-la-branche'
+            }
+        }
+```
+
+%%SOLUTION%%
+
+Maintenant que nous avons une deuxième branche avec nos 2 Jenkinsfile distincts, créons un nouveau `Pipeline`. Comme d'habitude, pour créer un Pipeline Jenkins, vous devez vous rendre sur _New Item_. Ensuite, désignez la dernière option `Multibranch Pipeline` et appuyez sur _Ok_. Paramétrez le pipeline en donnant l'adresse du dépôt mais aussi les credentials si besoin. La section `Behavior` détermine la stratégie sélectionnant les branches de notre dépôt Github pour le Pipeline. Par défaut, nous découvrons l'ensemble des branches, mais vous pouvez choisir la stratégie depuis le bouton `Add`. Vous pouvez par exemple choisir les branches via des **expressions régulières** depuis l'option `Filter by name (with regular expression)`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/multibranch.png" style="width:75%">
+</p>
+
+Après avoir appuyé sur le bouton _Save_, vous devrez avoir la page suivante :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/multibranch_dash.png" style="width:80%">
+</p>
+
+Sur le dashboard, appuyez sur _Scan Multibranch Pipeline Log_, qui vous renseigne si Jenkins a bien trouvé les `Jenkinsfile` sur les différentes branches.
+
+Nous avons au centre, l'état de notre pipeline sur les différentes branches détectées précédemment. En cliquant sur le nom d'une branche, vous retrouvez la page d'accueil classique d'un Pipeline Jenkins. Vous pouvez l'exécuter, voir ses résultats sur l'interface par défaut ou celle de _Blue Ocean_. En revenant, sur la page du _Multibranch Pipeline_, vous pouvez démarrer tous les pipelines associés à vos branches, en cliquant sur _Scan Multibranch Pipeline Now_. Les résultats seront accessibles en cliquant sur le nom de la branche.
+
 
 # VII - Conclusion
 
