@@ -3,7 +3,7 @@ pipeline {
     stages {
         stage('Name Branch') {
           steps {
-		echo 'This is the branch named ${env.GIT_BRANCH}'
+		sh "echo 'This is the branch named ${env.GIT_BRANCH}'"
 	  }
 	}
     }
