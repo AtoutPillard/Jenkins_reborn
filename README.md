@@ -2394,7 +2394,49 @@ Connections                   ttl     opn     rt1     rt5     p50     p90
 
 > Copiez l'adresse commençant par `https`, puis rajoutez à la fin `/github-webhook/`, par exemple dans l'exemple ci-dessus, nous devrions avoir `https://d4b48cd1f88c.ngrok.io/github-webhook/`. Ensuite dirigez-vous dans la section _Webhook_ et placez l'adresse dans l'encadré _Payload Url_. Vous pouvez maintenant retourner aux intructions.
 
+## **B Travailler sur plusieurs branches**
 
+l arrive très souvent que vous travaillez sur plusieurs branches sur un dépôt Git, mais cela serait chronophage si vous devez réaliser un `Pipeline` pour chaque branche.
+Heureusement, il existe l'option `Multibranch Pipeline`. Comme son nom l'indique, il s'agit d'un pipeline avec plusieurs branches.
+
+Tout d'abord, nous allons créer une nouvelle branche sur notre projet. Rendez-vous sur Github et écrivez le nom de votre nouvelle branche après avoir cliqué sur `main`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/creer_branche.png" style="width:75%">
+</p>
+
+Dans chacune de vos branches, se trouve un `Jenkinsfile`.
+
+> Rajoutez un `Stage` _Branche_ comportant un simple `echo nom-de-la-branche` sur les `Jenkinsfile` de chaque branche.
+
+%%SOLUTION%%
+
+```shell
+        stage('Branch') {
+            agent any
+            steps {
+                echo 'nom-de-la-branche'
+            }
+        }
+```
+
+%%SOLUTION%%
+
+Maintenant que nous avons une deuxième branche avec nos 2 Jenkinsfile distincts, créons un nouveau `Pipeline`. Comme d'habitude, pour créer un Pipeline Jenkins, vous devez vous rendre sur _New Item_. Ensuite, désignez la dernière option `Multibranch Pipeline` et appuyez sur _Ok_. Paramétrez le pipeline en donnant l'adresse du dépôt mais aussi les credentials si besoin. La section `Behavior` détermine la stratégie sélectionnant les branches de notre dépôt Github pour le Pipeline. Par défaut, nous découvrons l'ensemble des branches, mais vous pouvez choisir la stratégie depuis le bouton `Add`. Vous pouvez par exemple choisir les branches via des **expressions régulières** depuis l'option `Filter by name (with regular expression)`.
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/multibranch.png" style="width:75%">
+</p>
+
+Après avoir appuyé sur le bouton _Save_, vous devrez avoir la page suivante :
+
+<p align="center">
+  <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/multibranch_dash.png" style="width:80%">
+</p>
+
+Sur le dashboard, appuyez sur _Scan Multibranch Pipeline Log_, qui vous renseigne si Jenkins a bien trouvé les `Jenkinsfile` sur les différentes branches.
+
+Nous avons au centre, l'état de notre pipeline sur les différentes branches détectées précédemment. En cliquant sur le nom d'une branche, vous retrouvez la page d'accueil classique d'un Pipeline Jenkins. Vous pouvez l'exécuter, voir ses résultats sur l'interface par défaut ou celle de _Blue Ocean_. En revenant, sur la page du _Multibranch Pipeline_, vous pouvez démarrer tous les pipelines associés à vos branches, en cliquant sur _Scan Multibranch Pipeline Now_. Les résultats seront accessibles en cliquant sur le nom de la branche.
 
 
 # VII - Conclusion
