@@ -5,5 +5,6 @@ pipeline {
           steps {
 		echo 'This is the branch named ${env.GIT_BRANCH}'
 	  }
+	}
     }
 }
