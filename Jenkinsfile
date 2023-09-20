@@ -8,12 +8,12 @@ pipeline {
     stages {
         stage('Building') {
           steps {
- 		sh python3 -m pip install -r requirements.txt
+ 		sh 'python3 -m pip install -r requirements.txt'
            }
 	}
 	stage('Unit Testing') {
           steps {
-    		sh python3 -m unittest
+    		sh 'python3 -m unittest'
            }
 	}
 	stage('Deploying with Docker') {
