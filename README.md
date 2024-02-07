@@ -352,13 +352,11 @@ Cliquons sur commencer à utiliser Jenkins. Nous serons alors redirigé vers l'i
 
 Nous avons réussi à installer et configurer Jenkins. À gauche se trouve le **menu principal** permettant d'accéder aux différentes fonctionnalités de Jenkins comme la création de projets, la consultation de l'historique, ou encore la configuration de Jenkins.
 
-#%%
-
-# III - Mise en place des outils 
+## C - Mise en place des outils 
 
 <br>
 
-## **A - Plugins**
+### **C.1 - Plugins**
 
 Nous allons nous intéresser sur la paramétrisation de Jenkins, particulièrement aux **plugins de Jenkins**. Ce sont des composants essentiels qui étendent les fonctionnalités de base de Jenkins et permettent de personnaliser les flux de travail d'intégration continue selon les besoins spécifiques des projets.
 
@@ -422,7 +420,7 @@ Une fois terminé, le plugin sera disponible en option lors de la configuration 
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/github-logo.webp" style="width:30%">
 </p>
 
-## B - Création du dépôt Github
+### **C.2 - Création du dépôt Github**
 
 Nous parlerons à présent du processus d'intégration de GitHub à Jenkins. Pour rappel, GitHub est une plateforme en ligne utilisée pour la gestion de versions et la collaboration dans le développement de logiciels. 
 
@@ -437,7 +435,7 @@ Nous allons donc créer un dépôt afin de pouvoir versionner notre code source 
 Nous pouvons à présent créer notre dépôt en cliquant sur le bouton `Create repository`.
 
 
-## **C - Installation de Docker**
+### **C.3 - Installation de Docker**
 
 Docker est une plate-forme parfaitement adaptée à l'écosystème DevOps. C'est une solution appropriée pour les éditeurs de logiciels qui ne peuvent pas suivre le rythme de l'évolution de la technologie, des activités et des besoins des clients. Cela fait de Docker un choix évident pour développer et accélérer les opérations dans une entreprise.
 
@@ -481,7 +479,7 @@ sudo usermod -aG docker jenkins
 
 <br>
 
-## **D - Docker Hub**
+## **C.4 - Docker Hub**
 
 Docker Hub est un registre Docker, une version **hébergée** dans le cloud, une application côté serveur open-source, évolutive et sans état.
 
@@ -510,7 +508,7 @@ Vous pouvez créer un compte Dockerhub à l'adresse suivante : https://hub.docke
 <br>
 
 
-## **E - Credentials**
+## **C.5 - Credentials**
 Sur Jenkins, les credentials font référence aux informations d'identification nécessaires pour accéder à différents services, systèmes ou environnements lors de l'exécution de pipelines ou de jobs.
 
 Allons, à présent, créer nos éléments de connexion sur Jenkins. 
@@ -603,10 +601,9 @@ Ceci sera la liste de nos informations secretes :
 </p>
 
 
-
 #%%
 
-# IV Jobs et Build
+# III Jobs et Build
 
 
 ## **A - Les différents types de Jobs**
@@ -744,7 +741,7 @@ Comme avec Git, il est parfois plus rapide de passer par ces lignes de commandes
 
 #%%
 
-## **V - Pipeline Jenkins**
+## **IV - Pipeline Jenkins**
 
 <br>
 Précédemment, nous avons vu la fonctionnalité *Freestyle Project* nonobstant il ne s'agit pas de l'application classique de Jenkins. De même, nous avions mis le SCM (Source Code Management) à None bien que ce n'est rarement le cas. Une des fonctionnalités principales de Jenkins est le Pipeline.
@@ -2138,7 +2135,7 @@ pipeline {
 
 ### d.12 - when
 
-Les étapes du pipeline peuvent être exécutées en fonction des conditions définies dans une directive "quand". Si les conditions correspondent, les étapes définies dans l'étape correspondante seront exécutées. Il doit être défini au niveau de l'étape.
+Les étapes du pipeline peuvent être exécutées en fonction des conditions définies dans une directive "when". Si les conditions correspondent, les étapes définies dans l'étape correspondante seront exécutées. Il doit être défini au niveau de l'étape.
 
 Pour une liste complète des conditions et leurs explications, reportez-vous à [la directive when du pipeline déclaratif de Jenkins.](https://jenkins.io/doc/book/pipeline/syntax/#when) Les pipelines permettent d'effectuer des tâches sur des projets comportant plusieurs branches.
 
@@ -2163,9 +2160,7 @@ pipeline {
 
 Nous avons maintenant fini notre pipeline!
 
-Vous pouvez cliquez ensuite sur le bouton `Build Now` sur le dashboard de gauche, vous obtenez l'image suivante.
-
-#TODO: Ajouter l'image
+Vous pouvez cliquez ensuite sur le bouton `Build Now` sur le dashboard de gauche.
 
 Vous pouvez observer le succès ou l'échec des différentes étapes depuis la `Stage View` et le temps imparti pour réaliser l'étape. La couleur verte indique bien sûr que c'est un succès, et le rouge un echec. 
 
@@ -2178,9 +2173,7 @@ Nous allons maintenant voir comment gérer les erreurs. Pour cela nous allons si
 echoo 'Merging done'
 ```
 
-En cliquant à nouveau sur le bouton `Build Now`, nous obtenons cela :
-
-#TODO: Ajouter l'image
+En cliquant à nouveau sur le bouton `Build Now`, nous obtenons une erreur
 
 Comme prévu, nous obtenons une erreur. En affichant les logs, nous voyons quelle partie de l'étape Merging n'a pas fonctionné. En se concentrant sur la première erreur, nous observons que `echoo` n'existe pas, en effet nous avons mal écrit la commande. Vous pouvez, dès à présent, corriger l'erreur.
 
@@ -2193,17 +2186,19 @@ Les pipelines Jenkins sont largement utilisés dans les **environnements CI/CD**
 
 #%%
 
-# VI - Jenkins Blue Ocean
+# V - Compléments
+
+## A - Jenkins Blue Ocean
 
 <br>
 
-## **A - Introduction**
+### **A.1 - Introduction**
 
 Blue Ocean est un **plugin** de Jenkins qui simplifie le développement des pipelines de logiciels en permettant aux développeurs de créer des pipelines avec **éditeur visuel**, puis visualiser le **flux de processus** de manière intuitive, de sorte que toute l'organisation et pas seulement les développeurs puisse le comprendre.
 
 Pour cela, la nouvelle expérience utilisateur apportée par **Blue Ocean** est basée sur un design personnalisé et moderne et est créé sur la base de l'expérience utilisateur de Jenkins. Il est principalement conçu pour le processus de pipeline et permet de réduire le désordre causés par des multiples pipelines Jenkins et augmente également la clarté pour chaque membre de l'équipe.
 
-## **B - Principales caractéristiques de Blue Ocean**
+### **A.2 - Principales caractéristiques de Blue Ocean**
 
 - **Personnalisation :** Blue Ocean fonctionne de manière personnalisée. Chaque membre de l'équipe peut facilement visualiser l'exécution et les modifications apportées aux builds.
 
@@ -2214,7 +2209,7 @@ Pour cela, la nouvelle expérience utilisateur apportée par **Blue Ocean** est 
 
 - **Gratuit :** L'océan bleu est totalement gratuit. Il s'agit d'un **plugin** dans Jenkins et vous pouvez le télécharger à partir de la section Gérer Jenkins.
 
-## **C - Installation de Blue Ocean**
+### **A.3 - Installation de Blue Ocean**
 
 Pour installer le Blue Ocean dans le Jenkins, nous devons utiliser la version Jenkins 2.7.x ou ultérieure.
 
@@ -2272,11 +2267,8 @@ Une fois terminé, nous avons une interface qui nous montre que tout est Ok.
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_devops_fr/blue3.png" style="width:100%">
 </p>
 
-#%%
 
-# VII - Compléments
-
-## **A - Les Webhooks Github**
+## **B - Les Webhooks Github**
 
 **Les Webhooks sont des notifications déclenchées par des événements**. Dans la plupart des cas, ils sont utilisés pour la communication entre les systèmes. C'est le moyen le plus simple de recevoir une alerte lorsque un évènement (tentative de connexion, mise à jour...) se passe dans un autre système.
 
@@ -2422,7 +2414,11 @@ Dans chacune de vos branches, se trouve un `Jenkinsfile`.
 
 %%SOLUTION%%
 
-Maintenant que nous avons une deuxième branche avec nos 2 Jenkinsfile distincts, créons un nouveau `Pipeline`. Comme d'habitude, pour créer un Pipeline Jenkins, vous devez vous rendre sur _New Item_. Ensuite, désignez la dernière option `Multibranch Pipeline` et appuyez sur _Ok_. Paramétrez le pipeline en donnant l'adresse du dépôt mais aussi les credentials si besoin. La section `Behavior` détermine la stratégie sélectionnant les branches de notre dépôt Github pour le Pipeline. Par défaut, nous découvrons l'ensemble des branches, mais vous pouvez choisir la stratégie depuis le bouton `Add`. Vous pouvez par exemple choisir les branches via des **expressions régulières** depuis l'option `Filter by name (with regular expression)`.
+Maintenant que nous avons une deuxième branche avec nos 2 Jenkinsfile distincts, créons un nouveau `Pipeline`. Comme d'habitude, pour créer un Pipeline Jenkins, vous devez vous rendre sur _New Item_. Ensuite, désignez la dernière option `Multibranch Pipeline` et appuyez sur _Ok_. 
+
+Paramétrez le pipeline en donnant l'adresse du dépôt mais aussi les credentials si besoin. 
+
+La section `Behavior` détermine la stratégie sélectionnant les branches de notre dépôt Github pour le Pipeline. Par défaut, nous découvrons l'ensemble des branches, mais vous pouvez choisir la stratégie depuis le bouton `Add`. Vous pouvez par exemple choisir les branches via des **expressions régulières** depuis l'option `Filter by name (with regular expression)`.
 
 <p align="center">
   <img src="https://dst-de.s3.eu-west-3.amazonaws.com/jenkins_fr/multibranch.png" style="width:75%">
